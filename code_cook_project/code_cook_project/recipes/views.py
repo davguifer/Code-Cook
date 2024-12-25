@@ -60,15 +60,15 @@ def cargar_datos(request):
                         response_receta.raise_for_status()
                         soup_receta = BeautifulSoup(response_receta.text, 'html.parser')
                         
-                        print(soup_receta.find("h1", class_="entry_title").text.strip() if soup_receta.find("h1", class_="entry_title") else "Sin título")
-                        print(soup_receta.find("b").string if soup_receta.find("b").string else "Desconocido")
-                        print(int(soup_receta.find(text=lambda t: "Visitas:" in t).split(":")[-1].strip().replace(".", "")) if "Visitas:" in soup_receta.text else 0)
+
+
 
                         # Extraer detalles de la receta
                         detalles_receta = {
-                            "titulo": soup_receta.find("h1", class_="entry_title").text.strip() if soup_receta.find("h1", class_="entry_title") else "Sin título",
+                            "titulo": soup_receta.find("h1", class_="entry_title").text.strip() if soup_receta.find("h1", class_="entry_title") else "Desconocido",
                             "autor": soup_receta.find("b").string if soup_receta.find("b").string else "Desconocido",
-                            "visitas": int(soup_receta.find(text=lambda t: "Visitas:" in t).split(":")[-1].strip().replace(".", "")) if "Visitas:" in soup_receta.text else 0,
+                            "visitas": soup_receta.find("b", text="Visitas:").next_sibling.strip() if soup_receta.find("b", text="Visitas:") else "Desconocido",
+                            ##### Hasta aquí bien
                             "porciones": soup_receta.find("span", class_="yield").text.strip() if soup_receta.find("span", class_="yield") else None,
                             "tiempo_preparacion": soup_receta.find("span", class_="preptime").text.strip() if soup_receta.find("span", class_="preptime") else None,
                             "tiempo_coccion": soup_receta.find("span", class_="cooktime").text.strip() if soup_receta.find("span", class_="cooktime") else None,
