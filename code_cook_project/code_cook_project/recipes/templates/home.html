@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Code-Cook{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded-lg text-center">
+    <h1 class="display-4 text-primary">¡Bienvenido a Code-Cook!</h1>
+    <p class="lead">Descubre recetas deliciosas y personalizadas según tus gustos.</p>
+    <hr class="my-4">
+    <p>Selecciona una opción del menú superior para comenzar tu experiencia culinaria.</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'recetas_lista' %}" role="button">Explorar Recetas</a>
+</div>
+{% endblock %}

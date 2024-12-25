@@ -1,9 +1,18 @@
 from django.db import models
 
-# Create your models here.
 class Receta(models.Model):
     titulo = models.CharField(max_length=255)
-    ingredientes = models.TextField()
-    instrucciones = models.TextField()
-    tiempo_preparacion = models.IntegerField()
-    dificultad = models.CharField(max_length=50)
+    autor = models.CharField(max_length=255, blank=True, null=True)
+    visitas = models.IntegerField(default=0)
+    porciones = models.CharField(max_length=50, blank=True, null=True)
+    tiempo_preparacion = models.CharField(max_length=50, blank=True, null=True)
+    tiempo_coccion = models.CharField(max_length=50, blank=True, null=True)
+    dificultad = models.CharField(max_length=50, blank=True, null=True)
+    categoria = models.CharField(max_length=100, blank=True, null=True)
+    introduccion = models.TextField(blank=True, null=True)
+    ingredientes = models.TextField(blank=True, null=True)
+    instrucciones = models.TextField(blank=True, null=True)
+    url = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.titulo
