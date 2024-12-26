@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from .models import Receta
-from django.shortcuts import render
 from django.http import JsonResponse
 import requests
 from bs4 import BeautifulSoup
@@ -11,18 +10,7 @@ def home(request):
 
 
 # Extracción de datos con BeautifulSoup
-BASE_URL = "https://www.mundorecetas.com/recetas-pc/"
-
-
-from django.shortcuts import render
-from django.http import JsonResponse
-from .models import Receta
-import requests
-from bs4 import BeautifulSoup
-
-BASE_URL = "https://www.mundorecetas.com/recetas-pc/"
-
-
+BASE_URL = "https://www.moulinex.es/recetas/lista"
 def cargar_datos(request):
     """Scrapea todas las recetas de la página y las guarda en la base de datos."""
     recetas_guardadas = 0
@@ -34,55 +22,57 @@ def cargar_datos(request):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Extraer categorías
-        tabla_categorias = soup.find("table", {"border": "0"})
-        celdas_categorias = tabla_categorias.find_all("td", {"align": "center", "valign": "top"})
+        # Seleccionar el ul con la clase c__items
+        lista_recetas = soup.find("ul", class_="c__items")
+        print(lista_recetas)
+        print("###")
+        print(lista_recetas.find_all("li"))
+        print("###")
+        print(lista_recetas.find_all("a", class_="is-full-area ng-star-inserted"))
+        if lista_recetas:
+            # Encontrar todos los <a> dentro del <ul>
+            enlaces = lista_recetas.find_all("a", class_="is-full-area")
+            for enlace in enlaces:
+                href = enlace.get("href")
+                titulo = enlace.find("span", class_="is-visually-hidden").text.strip() if enlace.find("span", class_="is-visually-hidden") else "Sin título"
+                print(f"Enlace: {href}, Título: {titulo}")
 
-        for celda in celdas_categorias:
-            enlace_categoria = celda.find("a", href=True)
-            if enlace_categoria:
-                nombre_categoria = enlace_categoria.text.strip()
-                url_categoria = BASE_URL + enlace_categoria['href']
-                # Navegar a la categoría
-                response_categoria = requests.get(url_categoria)
-                response_categoria.raise_for_status()
-                soup_categoria = BeautifulSoup(response_categoria.text, 'html.parser')
-
-                # Extraer recetas de la categoría
-                celdas_recetas = soup_categoria.find_all("td", class_="row1")
-                for celda_receta in celdas_recetas:
-                    enlace_receta = celda_receta.find("a", href=True)
-                    if enlace_receta:
-                        url_receta = BASE_URL + enlace_receta['href']
-
-                        # Acceder a los detalles de la receta
+        if lista_recetas:
+            recetas = lista_recetas.find_all("li", class_="c__item")
+            for receta in recetas:
+                try:
+                    # Extraer enlace a la receta
+                    enlace = receta.find("a", class_="is-full-area")
+                    if enlace:
+                        url_receta = f"https://www.moulinex.es{enlace['href']}"
+                        
+                        # Acceder al detalle de la receta
                         response_receta = requests.get(url_receta)
                         response_receta.raise_for_status()
                         soup_receta = BeautifulSoup(response_receta.text, 'html.parser')
-                        
-
-
 
                         # Extraer detalles de la receta
-                        detalles_receta = {
-                            "titulo": soup_receta.find("h1", class_="entry_title").text.strip() if soup_receta.find("h1", class_="entry_title") else "Desconocido",
-                            "autor": soup_receta.find("b").string if soup_receta.find("b").string else "Desconocido",
-                            "visitas": soup_receta.find("b", text="Visitas:").next_sibling.strip() if soup_receta.find("b", text="Visitas:") else "Desconocido",
-                            ##### Hasta aquí bien
-                            "porciones": soup_receta.find("span", class_="yield").text.strip() if soup_receta.find("span", class_="yield") else None,
-                            "tiempo_preparacion": soup_receta.find("span", class_="preptime").text.strip() if soup_receta.find("span", class_="preptime") else None,
-                            "tiempo_coccion": soup_receta.find("span", class_="cooktime").text.strip() if soup_receta.find("span", class_="cooktime") else None,
-                            "dificultad": soup_receta.find("span", class_="duration").text.strip() if soup_receta.find("span", class_="duration") else None,
-                            "categoria": nombre_categoria,
-                            "introduccion": soup_receta.find("h2", text="Introducción:").find_next("p").text.strip() if soup_receta.find("h2", text="Introducción:") else None,
-                            "ingredientes": "\n".join([ing.text.strip() for ing in soup_receta.find_all("span", class_="ingredient")]),
-                            "instrucciones": soup_receta.find("h2", text="Instrucciones:").find_next("p").text.strip() if soup_receta.find("h2", text="Instrucciones:") else None,
-                            "url": url_receta,
-                        }
+                        titulo = soup_receta.find("h1", class_="c__title").text.strip()
+                        ingredientes = "\n".join([
+                            ing.text.strip() for ing in soup_receta.find_all("p", class_="is-body-s is-medium")
+                        ])
+                        tiempo_total = soup_receta.find("span", class_="c__duration brand-h3").text.strip()
 
-                        # Guardar en la base de datos
-                        Receta.objects.create(**detalles_receta)
+                        Receta.objects.create(
+                            titulo=titulo,
+                            ingredientes=ingredientes,
+                            accesorios="",  # No se identificaron accesorios en las imágenes
+                            tiempo_total=int(tiempo_total.split()[0]),
+                            tiempo_preparacion=0,  # Ajustar si existe en la estructura
+                            tiempo_de_coccion=0,  # Ajustar si existe en la estructura
+                            tiempo_de_resposo=0,  # Ajustar si existe en la estructura
+                            num_personas=0,  # Ajustar si existe en la estructura
+                        )
                         recetas_guardadas += 1
+                except Exception as receta_error:
+                    errores.append(f"Error procesando una receta: {receta_error}")
+        else:
+            errores.append("No se encontró la lista de recetas.")
 
     except Exception as e:
         errores.append(str(e))
@@ -91,4 +81,3 @@ def cargar_datos(request):
         'mensaje': f"Se han guardado {recetas_guardadas} recetas.",
         'errores': errores
     })
-
