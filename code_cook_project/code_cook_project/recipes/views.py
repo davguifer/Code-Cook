@@ -40,10 +40,21 @@ def load_data(request):
                     # Extraer detalles de la receta
                     titulo = soup_receta.find("h1", class_="heading-1").text.strip()
                     servings = soup_receta.find("li", class_="mt-sm list-item").findAll("div")[-1].string.strip()
+                    aux_prep_time = soup_receta.find("li", class_ = "body-copy-small list-item").findAll("span")[-1].string.strip().split()
+                    if aux_prep_time[1] == "hr" or aux_prep_time[1] == "hrs" and len(aux_prep_time) == 2:
+                        aux_prep_time[0] == aux_prep_time[0]*60
+                    elif len(aux_prep_time) == 4 and aux_prep_time[1] == "hr" or aux_prep_time[1] == "hrs":
+                        aux_prep_time[0] == aux_prep_time[0]*60 + aux_prep_time[3]
+                    else:
+                        aux_prep_time[0] == aux_prep_time[0]
+                    
+                    prep_time = aux_prep_time[0]
+                    
+                
                     
 
 
-                    break
+                    
                     
                     '''
                     Receta.objects.create(
