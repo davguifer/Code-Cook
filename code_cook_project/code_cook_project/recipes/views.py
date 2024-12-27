@@ -14,7 +14,7 @@ BASE_URL = "https://www.bbcgoodfood.com/search"
 def load_data(request):
     recetas_guardadas = 0
     errores = []
-
+    cont = 0
     try:
         # Get the main page
         response = requests.get(BASE_URL)
@@ -26,6 +26,7 @@ def load_data(request):
             category_container = category_heading.find_all("div", class_="search-result--list")   
             for recipes in category_container:
                 link_receta = recipes.find("a", class_="link d-block")
+                print(link_receta)
                 if link_receta:
                     url_receta = f"https://www.bbcgoodfood.com{link_receta['href']}"
                     # Access the recipe detail
@@ -36,14 +37,44 @@ def load_data(request):
                     title = soup_receta.find("h1", class_="heading-1").text.strip()
                     servings = soup_receta.find("li", class_="mt-sm list-item").findAll("div")[-1].string.strip()       
                     container = soup_receta.find("div", class_="icon-with-text__children").findAll("li", class_="body-copy-small list-item")
+
                     if len(container) == 2:
                         prep_time = convert_to_minutes(container[0].find("time").text)
                         cook_time = convert_to_minutes(container[1].find("time").text)
                     else:
                         prep_time = convert_to_minutes(container[0].find("time").text)
                         cook_time = 0
+
+                    total_time = prep_time + cook_time
+
+                    ingredients = []
+                    ingredients_sections = soup_receta.find_all("ul", class_="ingredients-list list")
+                    for section in ingredients_sections:
+                        li_elements = section.find_all("li")
+                        for li in li_elements:
+                            ingredient = li.get_text(strip=True)
+                            ingredients.append(ingredient)
+                    
+                    ingredients_text = ", ".join(ingredients)
+                    
+                    difficulty = soup_receta.findAll("li", class_="mt-sm mr-xl list-item")[1].text
+
+                    '''
+                    print(f"Title: {title}")
+                    print(f"Servings: {servings}")
+                    print(f"Prep Time: {prep_time} minutes")
+                    print(f"Cook Time: {cook_time} minutes")
+                    print(f"Total Time: {total_time} minutes")
+                    print(f"Ingredients: {ingredients_text}")
+                    print(f"Difficulty: {difficulty}")
+                    cont += 1
+                    print(cont)
+                    print("-------------------------------------")
+                    '''
                     
                     
+
+
 
 
                     
@@ -69,6 +100,7 @@ def load_data(request):
                 
                 recetas_guardadas += 1
                 '''
+            
                 
     except Exception as e:
         errores.append(str(e))
