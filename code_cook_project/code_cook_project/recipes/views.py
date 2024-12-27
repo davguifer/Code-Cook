@@ -42,9 +42,25 @@ def load_data(request):
                     soup_receta = BeautifulSoup(response_receta.text, 'html.parser')
 
                     # Extract the recipe details
+
+                    '''Title'''
                     title = soup_receta.find("h1", class_="heading-1").text.strip()
-                    servings = soup_receta.find("li", class_="mt-sm list-item").findAll("div")[-1].string.strip()  
+
+                    '''Servings'''
+                    div_elements = soup_receta.findAll("div", class_="icon-with-text__children")
+                    servings = "Unknown"
+
+                    for div in div_elements:
+                        if "Serves" in div.text.strip(): 
+                            servings_text = div.text.strip()
+                            numbers = " ".join([word for word in servings_text.split() if word.isdigit() or "-" in word])
+                            servings = f"Serves {numbers}"
+                            break
+                    
+
+                    '''Times(in minutes)'''
                     container = soup_receta.find("div", class_="icon-with-text__children").findAll("li", class_="body-copy-small list-item")
+                    
                     
                     prep_time = 0 
                     cook_time = 0
@@ -60,10 +76,10 @@ def load_data(request):
                             prep_time = convert_to_minutes(container[0].find("time").text)
                         elif "Cook" in container[0].text:
                             cook_time = convert_to_minutes(container[0].find("time").text)
-
+                    
                     total_time = prep_time + cook_time
 
-                    
+                    '''Ingredients'''
                     aux_ingredients = []
                     ingredients_sections = soup_receta.find_all("ul", class_="ingredients-list list")
 
@@ -87,52 +103,26 @@ def load_data(request):
                     ingredients = ", ".join(aux_ingredients)
 
 
+                    '''Difficulty'''
+                    div_elements = soup_receta.findAll("div", class_="icon-with-text__children")
+                    difficulty = "Unknown"
+
+                    for div in div_elements:
+                        text = div.text.strip()
+                        if "Easy" in text or "More effort" in text or "A challenge" in text:
+                            difficulty = text
+                            break
 
 
-                    #difficulty = soup_receta.findAll("li", class_="mt-sm mr-xl list-item")[1].text
-
-
-                    
                     print(f"Title: {title}")
                     print(f"Prep time: {prep_time}")
                     print(f"Cook time: {cook_time}")
-                    #print(f"Total time: {total_time}")
-                    #print(f"Ingredients: {ingredients}")
-                    #print(f"Difficulty: {difficulty}")
+                    print(f"Total time: {total_time}")
+                    print(f"Sergins: {servings}")
+                    print(f"Ingredients: {ingredients}")
+                    print(f"Difficulty: {difficulty}")
                     print("--------------------")
-                    
-
-     
-
-
-                    '''
-                    container = soup_receta.find("div", class_="icon-with-text__children").findAll("li", class_="body-copy-small list-item")
-
-                    if len(container) == 2:
-                        prep_time = convert_to_minutes(container[0].find("time").text)
-                        cook_time = convert_to_minutes(container[1].find("time").text)
-                    else:
-                        prep_time = convert_to_minutes(container[0].find("time").text)
-                        cook_time = 0
-
-                    total_time = prep_time + cook_time
-
-                    ingredients = []
-                    ingredients_sections = soup_receta.find_all("ul", class_="ingredients-list list")
-                    for section in ingredients_sections:
-                        li_elements = section.find_all("li")
-                        for li in li_elements:
-                            ingredient = li.get_text(strip=True)
-                            ingredients.append(ingredient)
-                    
-                    ingredients_text = ", ".join(ingredients)
-                    
-                    difficulty = soup_receta.findAll("li", class_="mt-sm mr-xl list-item")[1].text
-                    '''
-                    
-    
-
-                
+                            
             page += 1
             print(f"Page: {page}")
 
