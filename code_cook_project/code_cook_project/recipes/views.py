@@ -27,11 +27,12 @@ def load_data(request):
         if category_heading:
             category_container = category_heading.find_all("div", class_="search-result--list")
             #print(category_container)
+            
             for receta in category_container:
+                
                 enlace_receta = receta.find("a", class_="link d-block")
                 if enlace_receta:
                     url_receta = f"https://www.bbcgoodfood.com{enlace_receta['href']}"
-                    #print(url_receta)
                     # Acceder al detalle de la receta
                     response_receta = requests.get(url_receta)
                     response_receta.raise_for_status()
@@ -39,16 +40,22 @@ def load_data(request):
 
                     # Extraer detalles de la receta
                     titulo = soup_receta.find("h1", class_="heading-1").text.strip()
-                    servings = soup_receta.find("li", class_="mt-sm list-item").findAll("div")[-1].string.strip()
-                    aux_prep_time = soup_receta.find("li", class_ = "body-copy-small list-item").findAll("span")[-1].string.strip().split()
-                    if aux_prep_time[1] == "hr" or aux_prep_time[1] == "hrs" and len(aux_prep_time) == 2:
-                        aux_prep_time[0] == aux_prep_time[0]*60
-                    elif len(aux_prep_time) == 4 and aux_prep_time[1] == "hr" or aux_prep_time[1] == "hrs":
-                        aux_prep_time[0] == aux_prep_time[0]*60 + aux_prep_time[3]
-                    else:
-                        aux_prep_time[0] == aux_prep_time[0]
+                    servings = soup_receta.find("li", class_="mt-sm list-item").findAll("div")[-1].string.strip()       
                     
-                    prep_time = aux_prep_time[0]
+                    container = soup_receta.find("div", class_="icon-with-text__children").findAll("li", class_="body-copy-small list-item")
+                    if len(container) == 2:
+                        prep_time = convert_to_minutes(container[0].find("time").text)
+                        cook_time = convert_to_minutes(container[1].find("time").text)
+                    else:
+                        prep_time = convert_to_minutes(container[0].find("time").text)
+                        cook_time = 0
+                    
+                    
+
+
+
+                    
+                                        
                     
                 
                     
@@ -78,3 +85,18 @@ def load_data(request):
         'mensaje': f"Se han guardado {recetas_guardadas} recetas.",
         'errores': errores
     })
+
+def convert_to_minutes(time_str):
+    time_parts = time_str.split()
+    total_minutes = 0
+    
+    for i in range(0, len(time_parts), 2):
+        value = int(time_parts[i])
+        unit = time_parts[i + 1].lower()
+        
+        if "hr" in unit:  # Puede ser "hr" o "hrs"
+            total_minutes += value * 60
+        elif "min" in unit:  # Puede ser "min" o "mins"
+            total_minutes += value
+    
+    return total_minutes
