@@ -4,6 +4,8 @@ from .models import Recipes
 from django.http import JsonResponse
 import requests
 from bs4 import BeautifulSoup
+from django.contrib import messages
+
 
 
 def home(request):
@@ -183,17 +185,16 @@ def load_data(request):
                     
 
                     
-                            
+            recipes_saves += 1               
             page += 1
             print(f"Page: {page}")
+            print("----------------------------------------------------------------------------------------")
 
     except Exception as e:
         errors.append(str(e))
+    
+    return recipes_saves, errors
 
-    return JsonResponse({
-        'message': f"{recipes_saves} recipes have been saved.",
-        'errors': errors
-    })
 
 def convert_to_minutes(time_str):
     time_parts = time_str.replace("and", "").split() 
@@ -212,8 +213,12 @@ def convert_to_minutes(time_str):
 
 
 
-
 def confirm_load_data(request):
     if request.method == "POST":
-        return load_data(request)  
+        recipes_saved, errors = load_data(request)
+        if errors:
+            messages.error(request, "An error occurred while loading the data.")
+        else:
+            messages.success(request, f"Data loaded successfully! {recipes_saved} recipes have been saved.")
+        return redirect('home')
     return render(request, "confirm_load_data.html")
