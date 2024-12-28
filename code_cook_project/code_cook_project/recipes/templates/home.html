@@ -1,13 +1,72 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Home - Code-Cook{% endblock %}
 
 {% block content %}
-<div class="jumbotron bg-light p-5 rounded-lg text-center">
-    <h1 class="display-4 text-primary">Welcome to Code-Cook!</h1>
-    <p class="lead">Discover delicious and personalized recipes tailored to your tastes.</p>
-    <hr class="my-4">
-    <p>Select an option from the top menu to start your culinary journey.</p>
-    <a class="btn btn-primary btn-lg" href="{% url 'recipes_list' %}" role="button">Explore Recipes</a>
+<!-- Hero Section -->
+<div class="hero-section bg-primary text-white text-center py-5">
+    <div class="container">
+        <h1 class="display-4">Welcome to Code-Cook</h1>
+        <p class="lead">Your ultimate cooking companion. Manage your recipes with ease.</p>
+        <a href="{% url 'confirm_load_data' %}" class="btn btn-light btn-lg">Load data in database</a>
+    </div>
 </div>
+
+<!-- Django Messages -->
+<div class="container mt-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<!-- Features Section -->
+<div class="feature-section bg-light py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 feature-hover">
+                    <div class="card-body">
+                        <img src="{% static 'images/recipe_book.png' %}" alt="Recipe Book" class="img-fluid mb-3" style="height: 100px;">
+                        <h5 class="card-title">Organized Recipes</h5>
+                        <p class="card-text">Keep all your favorite recipes organized in one place with powerful search functionality.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 feature-hover">
+                    <div class="card-body">
+                        <img src="{% static 'images/data_analysis.png' %}" alt="Data Analysis" class="img-fluid mb-3" style="height: 100px;">
+                        <h5 class="card-title">Smart Analytics</h5>
+                        <p class="card-text">Analyze cooking times, difficulty levels, and reviews for better meal planning.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 feature-hover">
+                    <div class="card-body">
+                        <img src="{% static 'images/integration.png' %}" alt="Integration" class="img-fluid mb-3" style="height: 100px;">
+                        <h5 class="card-title">Seamless Integration</h5>
+                        <p class="card-text">Easily integrate with other tools to enhance your cooking experience.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.feature-hover {
+    transition: transform 0.3s ease;
+}
+
+.feature-hover:hover {
+    transform: scale(1.05);
+}
+</style>
 {% endblock %}

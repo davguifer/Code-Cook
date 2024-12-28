@@ -10,7 +10,7 @@ from django.contrib import messages
 
 
 def home(request):
-    return render(request, 'base.html')
+    return render(request, 'home.html')
 
 '''BEATUFIUL SOUP'''
 BASE_URL = "https://www.bbcgoodfood.com/search?page=1"
@@ -228,4 +228,8 @@ def confirm_load_data(request):
 
 def recipes_list(request):
     all_recipes = Recipes.objects.all()
+    for recipe in all_recipes:
+        if recipe.ingredients:
+            recipe.ingredients_list = [ingredient.strip() for ingredient in recipe.ingredients.split(",")]
+
     return render(request, 'recipes_list.html', {'recipes': all_recipes})

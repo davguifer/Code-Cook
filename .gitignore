@@ -46,3 +46,5 @@ db.sqlite3
 
 # Archivos de test
 coverage.xml
+
+whoosh_config/index/
