@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="search-container">
+    <h1>Search Recipes by Title</h1>
+    <form method="GET" action="">
+        <input type="text" name="titulo" placeholder="Enter recipe title..." required>
+        <button type="submit">Search</button>
+    </form>
+
+    {% if results %}
+        <h2>Search Results</h2>
+        <div class="recipes-list">
+            {% for recipe in results %}
+                <div class="recipe-card">
+                    <h3>{{ recipe.title }}</h3>
+                    <p><strong>Servings:</strong> {{ recipe.servings }}</p>
+                    <p><strong>Prep Time:</strong> {{ recipe.prep_time }} mins</p>
+                    <p><strong>Cook Time:</strong> {{ recipe.cook_time }} mins</p>
+                    <p><strong>Total Time:</strong> {{ recipe.total_time }} mins</p>
+                    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+                    <p><strong>Difficulty:</strong> {{ recipe.difficulty }}</p>
+                    <p><strong>Rating:</strong> {{ recipe.rating }}</p>
+                    <p><strong>Reviews:</strong> {{ recipe.num_reviews }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No recipes found. Try searching with a different title.</p>
+    {% endif %}
+</div>
+{% endblock %}
