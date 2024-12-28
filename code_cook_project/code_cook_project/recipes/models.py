@@ -8,7 +8,8 @@ class Recipes(models.Model):
     total_time = models.IntegerField()
     ingredients = models.TextField()
     dificulty = models.CharField(max_length=255)
-    valoration = models.FloatField()
+    rating = models.FloatField()
+    num_reviews = models.IntegerField()
 
 
     def __str__(self):

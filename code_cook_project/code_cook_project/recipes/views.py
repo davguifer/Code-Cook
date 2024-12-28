@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render
 from .models import Recipes
 from django.http import JsonResponse
@@ -112,8 +113,36 @@ def load_data(request):
                         if "Easy" in text or "More effort" in text or "A challenge" in text:
                             difficulty = text
                             break
+                    
+                    '''Valoration'''
+                    valoration = soup_receta.find("div", class_="mt-sm d-flex").findAll("span")
+
+                    rating = 0.0
+
+                    for value in valoration:
+                        if "0 reviews" in value.text:
+                            rating = 0.0
+                            break
+                        elif "A star rating of" in value.text:
+                            match = re.search(r"A star rating of ([0-9]+(?:\.[0-9]+)?) out of 5", value.text)
+                            if match:
+                                rating = float(match.group(1))
+                                break
 
 
+                    '''Number of reviews'''
+
+                    num_reviews_element = soup_receta.find("div", class_="mt-sm d-flex").findAll("span")[1]
+                    num_reviews_text = num_reviews_element.text
+                    match = re.search(r"(\d+)\s+rating", num_reviews_text)
+                    if match:
+                        num_reviews = int(match.group(1))
+                    else:
+                        num_reviews = 0
+
+
+
+                    '''
                     print(f"Title: {title}")
                     print(f"Prep time: {prep_time}")
                     print(f"Cook time: {cook_time}")
@@ -121,7 +150,10 @@ def load_data(request):
                     print(f"Sergins: {servings}")
                     print(f"Ingredients: {ingredients}")
                     print(f"Difficulty: {difficulty}")
+                    print(f"Rating: {rating}")
+                    print(f"Number of reviews: {num_reviews}")
                     print("--------------------")
+                    '''
                             
             page += 1
             print(f"Page: {page}")
