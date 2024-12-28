@@ -2,7 +2,7 @@ from django.db import models
 
 class Recipes(models.Model):
     title = models.CharField(max_length=255)
-    servings = models.IntegerField()
+    servings = models.CharField(max_length=255)
     prep_time = models.IntegerField()
     cook_time = models.IntegerField()
     total_time = models.IntegerField()

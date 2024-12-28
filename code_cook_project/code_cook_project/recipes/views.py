@@ -12,10 +12,15 @@ BASE_URL = "https://www.bbcgoodfood.com/search?page=1"
 
 # This function will be used to load the data from the BBC Good Food website
 def load_data(request):
-    recetas_guardadas = 0
-    errores = []
+    recipes_saves = 0
+    errors = []
     page = 1 
     cont = 0 
+
+    # Delete all the recipes in the database
+    Recipes.objects.all().delete()
+    
+    processed_urls = set()
 
     try:
         while page <= 20:  
@@ -33,10 +38,16 @@ def load_data(request):
             if not category_container:
                 break 
             
+
             for recipes in category_container:
                 link_receta = recipes.find("a", class_="link d-block")
                 if link_receta:
                     url_receta = f"https://www.bbcgoodfood.com{link_receta['href']}"
+
+                    if url_receta in processed_urls:
+                        continue
+                    processed_urls.add(url_receta)
+
                     # Access the recipe detail
                     response_receta = requests.get(url_receta)
                     response_receta.raise_for_status()
@@ -116,7 +127,6 @@ def load_data(request):
                     
                     '''Valoration'''
                     valoration = soup_receta.find("div", class_="mt-sm d-flex").findAll("span")
-
                     rating = 0.0
 
                     for value in valoration:
@@ -131,7 +141,6 @@ def load_data(request):
 
 
                     '''Number of reviews'''
-
                     num_reviews_element = soup_receta.find("div", class_="mt-sm d-flex").findAll("span")[1]
                     num_reviews_text = num_reviews_element.text
                     match = re.search(r"(\d+)\s+rating", num_reviews_text)
@@ -140,9 +149,6 @@ def load_data(request):
                     else:
                         num_reviews = 0
 
-
-
-                    '''
                     print(f"Title: {title}")
                     print(f"Prep time: {prep_time}")
                     print(f"Cook time: {cook_time}")
@@ -153,17 +159,38 @@ def load_data(request):
                     print(f"Rating: {rating}")
                     print(f"Number of reviews: {num_reviews}")
                     print("--------------------")
-                    '''
+
+
+                    # Save the recipe to the database
+                    try:
+                        Recipes.objects.create(
+                            title=title,
+                            servings=servings,
+                            prep_time=prep_time,
+                            cook_time=cook_time,
+                            total_time=total_time,
+                            ingredients=ingredients,
+                            dificulty=difficulty,
+                            rating=rating,
+                            num_reviews=num_reviews
+                        )
+                        recipes_saves += 1
+                    except Exception as e:
+                        errors.append(f"Error saving recipe '{title}': {str(e)}")
+
+                    
+
+                    
                             
             page += 1
             print(f"Page: {page}")
 
     except Exception as e:
-        errores.append(str(e))
+        errors.append(str(e))
 
     return JsonResponse({
-        'mensaje': f"Se han guardado {recetas_guardadas} recetas.",
-        'errores': errores
+        'message': f"{recipes_saves} recipes have been saved.",
+        'errors': errors
     })
 
 def convert_to_minutes(time_str):
