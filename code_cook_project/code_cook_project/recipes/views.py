@@ -1,13 +1,15 @@
 import re
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Recipes
 from django.http import JsonResponse
 import requests
 from bs4 import BeautifulSoup
 
+
 def home(request):
     return render(request, 'base.html')
 
+'''BEATUFIUL SOUP'''
 BASE_URL = "https://www.bbcgoodfood.com/search?page=1"
 
 # This function will be used to load the data from the BBC Good Food website
@@ -170,7 +172,7 @@ def load_data(request):
                             cook_time=cook_time,
                             total_time=total_time,
                             ingredients=ingredients,
-                            dificulty=difficulty,
+                            difficulty=difficulty,
                             rating=rating,
                             num_reviews=num_reviews
                         )
@@ -208,3 +210,10 @@ def convert_to_minutes(time_str):
     
     return total_minutes
 
+
+
+
+def confirm_load_data(request):
+    if request.method == "POST":
+        return load_data(request)  
+    return render(request, "confirm_load_data.html")

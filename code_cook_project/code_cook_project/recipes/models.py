@@ -7,7 +7,7 @@ class Recipes(models.Model):
     cook_time = models.IntegerField()
     total_time = models.IntegerField()
     ingredients = models.TextField()
-    dificulty = models.CharField(max_length=255)
+    difficulty = models.CharField(max_length=255)
     rating = models.FloatField()
     num_reviews = models.IntegerField()
 
