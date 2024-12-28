@@ -1,0 +1,29 @@
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">All Recipes</h1>
+    <div class="row">
+        {% for recipe in recipes %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ recipe.title }}</h5>
+                    <p><strong>Servings:</strong> {{ recipe.servings }}</p>
+                    <p><strong>Prep Time:</strong> {{ recipe.prep_time }} minutes</p>
+                    <p><strong>Cook Time:</strong> {{ recipe.cook_time }} minutes</p>
+                    <p><strong>Total Time:</strong> {{ recipe.total_time }} minutes</p>
+                    <p><strong>Difficulty:</strong> {{ recipe.difficulty }}</p>
+                    <p><strong>Rating:</strong> {{ recipe.rating }}/5 ({{ recipe.num_reviews }} reviews)</p>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center">No recipes found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

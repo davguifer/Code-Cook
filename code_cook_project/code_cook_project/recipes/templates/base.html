@@ -15,6 +15,16 @@
             font-family: 'Arial', sans-serif;
         }
 
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ajusta para que ocupe al menos toda la ventana */
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
         .navbar {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -22,12 +32,6 @@
         .navbar-brand {
             font-family: 'Pacifico', cursive;
             font-size: 1.5rem;
-        }
-
-        .content-wrapper {
-            display: flex;
-            flex-direction: column;
-            min-height: 100%;
         }
 
         .hero-section {
@@ -60,9 +64,24 @@
             background-color: #0056b3;
         }
 
-        .main-content {
-            flex: 1;
-            background-color: #f8f9fa;
+        .feature-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50vh; /* Ajusta el tamaño mínimo de la sección */
+            padding: 4rem 0; /* Espaciado adicional */
+        }
+
+        .feature-card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s;
+            margin: 1rem; /* Agrega espaciado entre los cuadros */
+        }
+
+        .feature-card:hover {
+            transform: scale(1.05);
         }
 
         footer {
@@ -70,6 +89,7 @@
             color: white;
             padding: 1rem 0;
             text-align: center;
+            margin-top: auto; /* Esto asegura que el footer quede en el fondo */
         }
 
         footer p {
@@ -100,6 +120,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'load_index' %}">Load index</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'recipes_list' %}">Recipes list</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -114,7 +137,7 @@
             </div>
         </div>
 
-        <!-- Mensajes Flash -->
+        <!-- Mensajes de Django -->
         <div class="container mt-4">
             {% if messages %}
                 {% for message in messages %}
@@ -126,21 +149,46 @@
             {% endif %}
         </div>
 
-        
-
-        <!-- Contenido Principal -->
-        <main class="main-content">
-            <div class="container my-4">
-                {% block content %}
-                {% endblock %}
+        <!-- Features Section -->
+        <div class="feature-section bg-light">
+            <div class="container">
+                <div class="row text-center justify-content-center">
+                    <div class="col-md-4">
+                        <div class="card feature-card">
+                            <div class="card-body">
+                                <img src="{% static 'images/recipe_book.png' %}" alt="Recipe Book" class="img-fluid mb-3" style="height: 100px;">
+                                <h5 class="card-title">Organized Recipes</h5>
+                                <p class="card-text">Keep all your favorite recipes organized in one place with powerful search functionality.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card feature-card">
+                            <div class="card-body">
+                                <img src="{% static 'images/data_analysis.png' %}" alt="Data Analysis" class="img-fluid mb-3" style="height: 100px;">
+                                <h5 class="card-title">Smart Analytics</h5>
+                                <p class="card-text">Analyze cooking times, difficulty levels, and reviews for better meal planning.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card feature-card">
+                            <div class="card-body">
+                                <img src="{% static 'images/integration.png' %}" alt="Integration" class="img-fluid mb-3" style="height: 100px;">
+                                <h5 class="card-title">Seamless Integration</h5>
+                                <p class="card-text">Easily integrate with other tools to enhance your cooking experience.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </main>
+        </div>
 
         <!-- Footer -->
         <footer>
             <div class="container">
                 <p>&copy; {{ current_year }} Code-Cook. All rights reserved.</p>
-                <p>Made with <span style="color: #e25555;">♥</span> by Code-Cook Team.</p>
+                <p>Elaborated by David Guillén.</p>
             </div>
         </footer>
     </div>

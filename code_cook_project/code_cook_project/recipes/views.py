@@ -8,6 +8,7 @@ from django.contrib import messages
 
 
 
+
 def home(request):
     return render(request, 'base.html')
 
@@ -222,3 +223,9 @@ def confirm_load_data(request):
             messages.success(request, f"Data loaded successfully! {recipes_saved} recipes have been saved.")
         return redirect('home')
     return render(request, "confirm_load_data.html")
+
+
+
+def recipes_list(request):
+    all_recipes = Recipes.objects.all()
+    return render(request, 'recipes_list.html', {'recipes': all_recipes})
