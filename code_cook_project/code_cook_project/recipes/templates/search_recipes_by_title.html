@@ -1,32 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="search-container">
-    <h1>Search Recipes by Title</h1>
-    <form method="GET" action="">
-        <input type="text" name="titulo" placeholder="Enter recipe title..." required>
-        <button type="submit">Search</button>
-    </form>
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="text-primary">Search Recipes by Title</h1>
+        <p class="text-muted">Find your favorite recipes quickly and easily by entering their title.</p>
+    </div>
 
-    {% if results %}
-        <h2>Search Results</h2>
-        <div class="recipes-list">
-            {% for recipe in results %}
-                <div class="recipe-card">
-                    <h3>{{ recipe.title }}</h3>
-                    <p><strong>Servings:</strong> {{ recipe.servings }}</p>
-                    <p><strong>Prep Time:</strong> {{ recipe.prep_time }} mins</p>
-                    <p><strong>Cook Time:</strong> {{ recipe.cook_time }} mins</p>
-                    <p><strong>Total Time:</strong> {{ recipe.total_time }} mins</p>
-                    <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
-                    <p><strong>Difficulty:</strong> {{ recipe.difficulty }}</p>
-                    <p><strong>Rating:</strong> {{ recipe.rating }}</p>
-                    <p><strong>Reviews:</strong> {{ recipe.num_reviews }}</p>
+    <div class="search-container mb-4">
+        <form method="GET" action="" class="d-flex justify-content-center">
+            <input 
+                type="text" 
+                name="titulo" 
+                class="form-control me-2 w-50 shadow-sm" 
+                placeholder="Enter recipe title..." 
+                required>
+            <button type="submit" class="btn btn-primary shadow-sm">Search</button>
+        </form>
+    </div>
+
+    {% if request.GET.titulo %}
+        {% if results %}
+            <div class="text-center mb-4">
+                <h2 class="text-success">Search Results</h2>
+                <p class="text-muted">We found {{ results|length }} recipes matching your search.</p>
+            </div>
+            <div class="row">
+                {% for recipe in results %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-secondary">{{ recipe.title }}</h5>
+                            <p><strong>Servings:</strong> {{ recipe.servings }}</p>
+                            <p><strong>Prep Time:</strong> {{ recipe.prep_time }} mins</p>
+                            <p><strong>Cook Time:</strong> {{ recipe.cook_time }} mins</p>
+                            <p><strong>Total Time:</strong> {{ recipe.total_time }} mins</p>
+                            <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+                            <p><strong>Difficulty:</strong> 
+                                <span class="badge bg-info text-dark">{{ recipe.difficulty }}</span>
+                            </p>
+                            <p><strong>Rating:</strong> 
+                                <span class="text-warning">&#9733;</span> {{ recipe.rating }}/5 
+                                ({{ recipe.num_reviews }} reviews)
+                            </p>
+                        </div>
+                    </div>
                 </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p>No recipes found. Try searching with a different title.</p>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center mt-5">
+                <p class="text-muted">Sorry, we couldn't find any recipes matching your search. Please try again with a different title.</p>
+            </div>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}

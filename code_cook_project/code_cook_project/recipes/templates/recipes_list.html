@@ -4,7 +4,9 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center mb-4 text-primary">All Recipes</h1>
+    <h1 class="text-center mb-4 text-primary">
+        All Recipes ({{ recipes|length }})
+    </h1>
     <div class="row">
         {% for recipe in recipes %}
         <div class="col-md-4 mb-4">
