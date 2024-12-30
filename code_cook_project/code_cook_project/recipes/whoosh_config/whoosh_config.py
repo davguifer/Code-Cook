@@ -90,6 +90,7 @@ def search_recipes_by_title(request):
 
         except Exception as e:
             print(f"Error while searching for recipes: {e}")
+
     
     return render(request, "search_recipes_by_title.html", {"results": results_list})
 
@@ -156,8 +157,12 @@ def search_recipes_by_cooking_time(request):
             print(f"Value error: {ve}")
             error_message = str(ve)
         except Exception as e:
-            print(f"General error: {e}")
-            error_message = f"An error occurred: {str(e)}"
+            if isinstance(e, FileNotFoundError) or "No such file or directory" in str(e):
+                print("Error: Index not found. Please load the index and try again.")
+                error_message = "The index is missing. Please load the index to proceed."
+            else:
+                print(f"General error: {e}")
+                error_message = f"An error occurred: {str(e)}"
 
     else:
         print("No valid search was submitted")
@@ -224,8 +229,12 @@ def search_recipes_by_prep_time(request):
             print(f"Value error: {ve}")
             error_message = str(ve)
         except Exception as e:
-            print(f"General error: {e}")
-            error_message = f"An error occurred: {str(e)}"
+            if isinstance(e, FileNotFoundError) or "No such file or directory" in str(e):
+                print("Error: Index not found. Please load the index and try again.")
+                error_message = "The index is missing. Please load the index to proceed."
+            else:
+                print(f"General error: {e}")
+                error_message = f"An error occurred: {str(e)}"
 
     else:
         print("No valid search was submitted")
@@ -292,8 +301,12 @@ def search_recipes_by_total_time(request):
             print(f"Value error: {ve}")
             error_message = str(ve)
         except Exception as e:
-            print(f"General error: {e}")
-            error_message = f"An error occurred: {str(e)}"
+            if isinstance(e, FileNotFoundError) or "No such file or directory" in str(e):
+                print("Error: Index not found. Please load the index and try again.")
+                error_message = "The index is missing. Please load the index to proceed."
+            else:
+                print(f"General error: {e}")
+                error_message = f"An error occurred: {str(e)}"
 
     else:
         print("No valid search was submitted")
@@ -374,8 +387,12 @@ def search_recipes_by_ingredients_and_total_time(request):
             print(f"Value error: {ve}")
             error_message = str(ve)
         except Exception as e:
-            print(f"General error: {e}")
-            error_message = f"An error occurred: {str(e)}"
+            if isinstance(e, FileNotFoundError) or "No such file or directory" in str(e):
+                print("Error: Index not found. Please load the index and try again.")
+                error_message = "The index is missing. Please load the index to proceed."
+            else:
+                print(f"General error: {e}")
+                error_message = f"An error occurred: {str(e)}"
 
     return render(request, "search_recipes_by_ingredients_and_total_time.html", {
         "recipes": results_list,
@@ -383,6 +400,73 @@ def search_recipes_by_ingredients_and_total_time(request):
     })
 
 '''SEARCH RECIPES BY DIFFICULTY OR RATING'''
+def search_recipes_by_difficulty_or_rating(request):
+    results_list = []
+    error_message = None
+
+    if request.method == "GET":
+        difficulty_query = request.GET.get("difficulty", "").strip().lower()
+        min_rating_str = request.GET.get("min_rating", "").strip()
+        index_dir = os.path.join(os.path.dirname(__file__), 'index')
+
+        try:
+            if not os.path.exists(index_dir):
+                raise Exception("Index not found. Please ensure the index is created.")
+
+            ix = open_dir(index_dir)
+            with ix.searcher() as searcher:
+                combined_query = []
+
+                if difficulty_query:
+                    difficulty_parser = QueryParser("difficulty", schema=ix.schema)
+                    difficulty_subquery = difficulty_parser.parse(f"{difficulty_query}")
+                    combined_query.append(difficulty_subquery)
+
+                if min_rating_str:
+                    if not min_rating_str.replace(".", "").isdigit():
+                        raise ValueError("Rating must be a valid number.")
+                    min_rating = float(min_rating_str)
+                    rating_subquery = NumericRange("rating", min_rating, None)
+                    combined_query.append(rating_subquery)
+
+                if combined_query:
+                    final_query = combined_query[0]
+                    for subquery in combined_query[1:]:
+                        final_query = final_query & subquery
+
+                    results = searcher.search(final_query, limit=None)
+
+                    for result in results:
+                        ingredients_list = result.get("ingredients", "").split(",") if result.get("ingredients") else []
+                        results_list.append({
+                            "title": result.get("title", "Unknown Title"),
+                            "servings": result.get("servings", "N/A"),
+                            "prep_time": result.get("prep_time", "N/A"),
+                            "cook_time": result.get("cook_time", "N/A"),
+                            "total_time": result.get("total_time", "N/A"),
+                            "difficulty": result.get("difficulty", "N/A"),
+                            "rating": result.get("rating", "N/A"),
+                            "num_reviews": result.get("num_reviews", "N/A"),
+                            "ingredients_list": ingredients_list,
+                        })
+
+        except ValueError as ve:
+            print(f"Value error: {ve}")
+            error_message = str(ve)
+        except Exception as e:
+            if isinstance(e, FileNotFoundError) or "No such file or directory" in str(e):
+                print("Error: Index not found. Please load the index and try again.")
+                error_message = "The index is missing. Please load the index to proceed."
+            else:
+                print(f"General error: {e}")
+                error_message = f"An error occurred: {str(e)}"
+
+
+    return render(request, "search_recipes_by_difficulty_or_rating.html", {
+        "recipes": results_list,
+        "error": error_message,
+    })
+
 
 
 '''TOP 3 RECIPES BY RATING'''

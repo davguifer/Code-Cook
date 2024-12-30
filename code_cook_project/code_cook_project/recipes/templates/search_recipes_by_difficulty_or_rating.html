@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Search by Difficulty or Rating - Code-Cook{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="text-primary">Search Recipes by Difficulty or Rating</h1>
+        <p class="text-muted">Filter recipes by difficulty level and/or minimum rating.</p>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-6 offset-md-3">
+            <form method="GET" action="{% url 'search_recipes_by_difficulty_or_rating' %}">
+                <div class="mb-3">
+                    <label for="difficulty" class="form-label">Difficulty</label>
+                    <select class="form-select" id="difficulty" name="difficulty">
+                        <option value="" {% if not difficulty %}selected{% endif %}>All Difficulties</option>
+                        <option value="Easy" {% if difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+                        <option value="More effort" {% if difficulty == 'More effort' %}selected{% endif %}>More effort</option>
+                        <option value="A challenge" {% if difficulty == 'A challenge' %}selected{% endif %}>A challenge</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="min_rating" class="form-label">Minimum Rating</label>
+                    <input type="number" step="0.1" min="0" max="5" class="form-control" id="min_rating" name="min_rating" placeholder="Enter minimum rating (0 to 5)" value="{{ min_rating|default:'' }}">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </form>
+        </div>
+    </div>
+
+    {% if error %}
+        <div class="alert alert-danger text-center">
+            <p>{{ error }}</p>
+        </div>
+    {% else %}
+        {% if recipes %}
+            <h2 class="text-center mb-4 text-primary">Found Recipes ({{ recipes|length }})</h2>
+            <div class="row">
+                {% for recipe in recipes %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h5 class="card-title mb-0">{{ recipe.title }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Servings:</strong> {{ recipe.servings }}</p>
+                            <p><strong>Prep Time:</strong> {{ recipe.prep_time }} minutes</p>
+                            <p><strong>Cook Time:</strong> {{ recipe.cook_time }} minutes</p>
+                            <p><strong>Total Time:</strong> {{ recipe.total_time }} minutes</p>
+                            <p><strong>Difficulty:</strong> <span class="badge bg-info text-dark">{{ recipe.difficulty }}</span></p>
+                            <p><strong>Rating:</strong> <span class="text-warning">&#9733; {{ recipe.rating }}</span>/5 ({{ recipe.num_reviews }} reviews)</p>
+                            <hr>
+                            <p><strong>Ingredients:</strong></p>
+                            <ul class="list-unstyled">
+                                {% for ingredient in recipe.ingredients_list %}
+                                <li>&bull; {{ ingredient }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% elif request.GET %}
+            <div class="col-12">
+                <p class="text-center text-muted">No recipes found matching your criteria.</p>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
