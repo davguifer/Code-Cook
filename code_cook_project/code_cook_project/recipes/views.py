@@ -19,8 +19,7 @@ BASE_URL = "https://www.bbcgoodfood.com/search?page=1"
 def load_data(request):
     recipes_saves = 0
     errors = []
-    page = 1 
-    cont = 0 
+    page = 1  
 
     # Delete all the recipes in the database
     Recipes.objects.all().delete()

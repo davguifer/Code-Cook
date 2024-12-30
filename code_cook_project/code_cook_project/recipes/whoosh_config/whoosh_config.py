@@ -1,8 +1,8 @@
+from whoosh.query import NumericRange, And, Or, Term
 import shutil
 from whoosh.index import create_in, open_dir, EmptyIndexError
 from whoosh.fields import Schema, TEXT, ID, NUMERIC
 from whoosh.qparser import MultifieldParser, OrGroup
-from whoosh.query import Term, NumericRange
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.http import JsonResponse
@@ -146,7 +146,7 @@ def search_recipes_by_cooking_time(request):
                         "ingredients_list": result.get("ingredients", "").split(","),
                     })
 
-            return render(request, "recipes_list_by_time.html", {
+            return render(request, "search_recipes_by_time.html", {
                 "recipes": results_list,
                 "filter_time": cook_time,
                 "comparator": filter_cook
@@ -162,7 +162,7 @@ def search_recipes_by_cooking_time(request):
     else:
         print("No valid search was submitted")
 
-    return render(request, "recipes_list_by_time.html", {
+    return render(request, "search_recipes_by_time.html", {
         "recipes": results_list,
         "error": error_message
     })
@@ -214,7 +214,7 @@ def search_recipes_by_prep_time(request):
                         "ingredients_list": result.get("ingredients", "").split(","),
                     })
 
-            return render(request, "recipes_list_by_time.html", {
+            return render(request, "s.html", {
                 "recipes": results_list,
                 "filter_time": prep_time,
                 "comparator": filter_prep
@@ -230,7 +230,7 @@ def search_recipes_by_prep_time(request):
     else:
         print("No valid search was submitted")
 
-    return render(request, "recipes_list_by_time.html", {
+    return render(request, "search_recipes_by_time.html", {
         "recipes": results_list,
         "error": error_message
     })
@@ -282,7 +282,7 @@ def search_recipes_by_total_time(request):
                         "ingredients_list": result.get("ingredients", "").split(","),
                     })
 
-            return render(request, "recipes_list_by_time.html", {
+            return render(request, "search_recipes_by_time.html", {
                 "recipes": results_list,
                 "filter_time": total_time,
                 "comparator": filter_total
@@ -298,34 +298,88 @@ def search_recipes_by_total_time(request):
     else:
         print("No valid search was submitted")
 
-    return render(request, "recipes_list_by_time.html", {
+    return render(request, "search_recipes_by_time.html", {
         "recipes": results_list,
         "error": error_message
     })
 
 
-def buscar_recetas_por_ingrediente(request):
+
+'''SEARCH RECIPES BY INGREDIENTS'''
+def search_recipes_by_ingredients_and_total_time(request):
+    results_list = []
+    error_message = None
+
     if request.method == "GET":
-        ingrediente = request.GET.get("ingrediente", "")
+        ingredients_query = request.GET.get("ingredients", "").strip().lower()
+        total_time_str = request.GET.get("total_time", "").strip()
+        filter_total = request.GET.get("filter_total", "").strip()
+        print(request.GET)
         index_dir = os.path.join(os.path.dirname(__file__), 'index')
-        ix = open_dir(index_dir)
-        results_list = []
 
-        with ix.searcher() as searcher:
-            query = Term("ingredients", ingrediente)
-            results = searcher.search(query)
+        try:
+            ix = open_dir(index_dir)
+            with ix.searcher() as searcher:
+                combined_query = []
+                if ingredients_query:
+                    ingredients_list = [ingredient.strip() for ingredient in ingredients_query.split(",")]
+                    ingredients_subqueries = []
+                    for ingredient in ingredients_list:
+                        ingredient_parser = QueryParser("ingredients", schema=ix.schema)
+                        ingredients_subqueries.append(ingredient_parser.parse(f'*{ingredient}*'))
+                    if ingredients_subqueries:
+                        combined_ingredients_query = ingredients_subqueries[0]
+                        for subquery in ingredients_subqueries[1:]:
+                            combined_ingredients_query &= subquery
+                        combined_query.append(combined_ingredients_query)
 
-            for result in results:
-                results_list.append({
-                    "title": result["title"],
-                    "servings": result["servings"],
-                    "ingredients": result["ingredients"],
-                    "prep_time": result["prep_time"],
-                    "difficulty": result["difficulty"],
-                    "url": result["url"]
-                })
+                if total_time_str and filter_total:
+                    if not total_time_str.isdigit():
+                        raise ValueError("Total time must be a valid integer.")
+                    total_time = int(total_time_str)
 
-        return JsonResponse({"results": results_list})
-    return render(request, "buscar_recetas_por_ingrediente.html")
+                    if filter_total not in ["lt", "gt", "eq"]:
+                        raise ValueError("The comparison filter is invalid. Use: lt, gt, or eq.")
+
+                    if filter_total == "gt":
+                        time_subquery = NumericRange("total_time", total_time + 1, None)
+                    elif filter_total == "lt":
+                        time_subquery = NumericRange("total_time", None, total_time - 1)
+                    elif filter_total == "eq":
+                        time_subquery = NumericRange("total_time", total_time, total_time)
+
+                    combined_query.append(time_subquery)
+
+                if combined_query:
+                    final_query = combined_query[0]
+                    for subquery in combined_query[1:]:
+                        final_query &= subquery
+
+                    results = searcher.search(final_query, limit=None)
+
+                    for result in results:
+                        results_list.append({
+                            "title": result.get("title", "Unknown Title"),
+                            "servings": result.get("servings", "N/A"),
+                            "prep_time": result.get("prep_time", "N/A"),
+                            "cook_time": result.get("cook_time", "N/A"),
+                            "total_time": result.get("total_time", "N/A"),
+                            "difficulty": result.get("difficulty", "N/A"),
+                            "rating": result.get("rating", "N/A"),
+                            "num_reviews": result.get("num_reviews", "N/A"),
+                            "ingredients_list": result.get("ingredients", "").split(","),
+                        })
+
+        except ValueError as ve:
+            print(f"Value error: {ve}")
+            error_message = str(ve)
+        except Exception as e:
+            print(f"General error: {e}")
+            error_message = f"An error occurred: {str(e)}"
+
+    return render(request, "search_recipes_by_ingredients_and_total_time.html", {
+        "recipes": results_list,
+        "error": error_message,
+    })
 
 
