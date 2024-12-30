@@ -327,7 +327,6 @@ def search_recipes_by_ingredients_and_total_time(request):
         ingredients_query = request.GET.get("ingredients", "").strip().lower()
         total_time_str = request.GET.get("total_time", "").strip()
         filter_total = request.GET.get("filter_total", "").strip()
-        print(request.GET)
         index_dir = os.path.join(os.path.dirname(__file__), 'index')
 
         try:
