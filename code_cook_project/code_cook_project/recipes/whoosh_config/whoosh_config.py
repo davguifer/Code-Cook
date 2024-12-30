@@ -426,3 +426,42 @@ def search_top_recipes(request):
         print(f"Error while searching top recipes: {e}")
 
     return render(request, "search_top_recipes.html", {"recipes": results_list})
+
+
+
+'''QUICK RECIPES'''
+def quick_recipes(request):
+    results_list = []
+
+    try:
+        # Directorio del índice de Whoosh
+        index_dir = os.path.join(os.path.dirname(__file__), 'index')
+        if not os.path.exists(index_dir):
+            raise Exception(f"Index not found in {index_dir}")
+
+        # Abrir el índice de Whoosh
+        ix = open_dir(index_dir)
+
+        # Buscar recetas con tiempo total menor o igual a 30 minutos
+        with ix.searcher() as searcher:
+            query = NumericRange("total_time", None, 30)  # `None` indica que no hay límite inferior
+            results = searcher.search(query, limit=None)
+
+            # Procesar los resultados
+            for result in results:
+                results_list.append({
+                    "title": result.get("title", "Unknown Title"),
+                    "servings": result.get("servings", "N/A"),
+                    "prep_time": result.get("prep_time", "N/A"),
+                    "cook_time": result.get("cook_time", "N/A"),
+                    "total_time": result.get("total_time", "N/A"),
+                    "difficulty": result.get("difficulty", "N/A"),
+                    "rating": result.get("rating", "N/A"),
+                    "num_reviews": result.get("num_reviews", "N/A"),
+                    "ingredients_list": result.get("ingredients", "").split(",") if result.get("ingredients") else [],
+                })
+
+    except Exception as e:
+        print(f"Error while searching quick recipes: {e}")
+
+    return render(request, "quick_recipes.html", {"recipes": results_list})

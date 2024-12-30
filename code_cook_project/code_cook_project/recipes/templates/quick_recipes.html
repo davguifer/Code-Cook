@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Quick Recipes - Code-Cook{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4 text-success display-4">
+        Quick Recipes
+    </h1>
+    <p class="text-center text-muted mb-5">
+        Discover recipes you can enjoy in 30 minutes or less!
+    </p>
+    <div class="row">
+        {% for recipe in recipes %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center">
+                    <h5 class="card-title mb-0">{{ recipe.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <span class="badge bg-warning text-dark fs-5">&#9733; {{ recipe.rating }}</span>
+                        <span class="text-muted small">({{ recipe.num_reviews }} reviews)</span>
+                    </div>
+                    <p class="mb-2"><strong>Servings:</strong> {{ recipe.servings }}</p>
+                    <p class="mb-2"><strong>Prep Time:</strong> {{ recipe.prep_time }} minutes</p>
+                    <p class="mb-2"><strong>Cook Time:</strong> {{ recipe.cook_time }} minutes</p>
+                    <p class="mb-2"><strong>Total Time:</strong> {{ recipe.total_time }} minutes</p>
+                    <p class="mb-2"><strong>Difficulty:</strong> <span class="badge bg-info text-dark">{{ recipe.difficulty }}</span></p>
+                    <hr>
+                    <p><strong>Ingredients:</strong></p>
+                    <ul class="list-unstyled">
+                        {% for ingredient in recipe.ingredients_list %}
+                        <li>• {{ ingredient }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-footer text-center bg-light">
+                    <small class="text-muted">Quick and easy recipe for your busy days!</small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center text-muted">No quick recipes found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
