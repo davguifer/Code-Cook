@@ -10,7 +10,6 @@ from recipes.models import Recipes
 import os
 from whoosh.qparser import QueryParser
 
-
 def load_index(request):
     if request.method == "POST":
         try:
@@ -61,23 +60,21 @@ def load_index(request):
     return render(request, "confirm_load_index.html")
 
 
+'''SEARCH RECIPES BY TITLE'''
 def search_recipes_by_title(request): 
     results_list = []
 
     if request.method == "GET" and "titulo" in request.GET:
-        query = request.GET.get("titulo", "").strip().lower()  # Convertir a minúsculas y eliminar espacios
+        query = request.GET.get("titulo", "").strip().lower()
         index_dir = os.path.join(os.path.dirname(__file__), 'index')
 
         try:
             ix = open_dir(index_dir)
             with ix.searcher() as searcher:
-                # Crear consulta básica
-                parser = QueryParser("title", schema=ix.schema)  # Usamos QueryParser para buscar solo en el título
-                search_query = parser.parse(f'*{query}*')  # El asterisco (*) ayuda a buscar subtítulos que contengan palabras
-
+                parser = QueryParser("title", schema=ix.schema) 
+                search_query = parser.parse(f'*{query}*')
                 results = searcher.search(search_query)
 
-                # Extraer datos de los resultados
                 for result in results:
                     results_list.append({
                         "title": result["title"],
@@ -92,45 +89,220 @@ def search_recipes_by_title(request):
                     })
 
         except Exception as e:
-            print(f"Error al buscar recetas: {e}")
+            print(f"Error while searching for recipes: {e}")
     
-    # Renderizar la plantilla con los resultados
     return render(request, "search_recipes_by_title.html", {"results": results_list})
 
 
 
+'''SEARCH RECIPES BY TIME'''
+def search_recipes_by_time(request):
+    return render(request, "search_recipes_by_time.html")
 
 
-def buscar_recetas_por_tiempo_coccion(request):
-    if request.method == "GET":
-        valor = int(request.GET.get("valor", 0))
-        comparador = request.GET.get("comparador", "gte")  # Valores: gte, lte, eq
-        index_dir = os.path.join(os.path.dirname(__file__), 'index')
-        ix = open_dir(index_dir)
-        results_list = []
+'''SEARCH RECIPES BY COOKING TIME'''
+def search_recipes_by_cooking_time(request):
+    results_list = []
+    error_message = None
 
-        with ix.searcher() as searcher:
-            if comparador == "gte":
-                query = NumericRange("cook_time", valor, None)
-            elif comparador == "lte":
-                query = NumericRange("cook_time", None, valor)
-            else:
-                query = NumericRange("cook_time", valor, valor)
+    if request.method == "GET" and "cook_time" in request.GET and "filter_cook" in request.GET:
+        try:
+            cook_time_str = request.GET.get("cook_time", "0").strip()
+            filter_cook = request.GET.get("filter_cook", "").strip()
 
-            results = searcher.search(query)
+            if not cook_time_str.isdigit():
+                raise ValueError("Cooking time must be a valid integer.")
+            cook_time = int(cook_time_str)
 
-            for result in results:
-                results_list.append({
-                    "title": result["title"],
-                    "servings": result["servings"],
-                    "ingredients": result["ingredients"],
-                    "prep_time": result["prep_time"],
-                    "difficulty": result["difficulty"],
-                    "url": result["url"]
-                })
+            if filter_cook not in ["lt", "gt", "eq"]:
+                raise ValueError("The comparison filter is invalid. Use: lt, gt, or eq.")
 
-        return JsonResponse({"results": results_list})
-    return render(request, "buscar_recetas_por_tiempo_coccion.html")
+            index_dir = os.path.join(os.path.dirname(__file__), 'index')
+            if not os.path.exists(index_dir):
+                raise Exception(f"Index not found in {index_dir}")
+
+            ix = open_dir(index_dir)
+
+            with ix.searcher() as searcher:
+                if filter_cook == "gt":
+                    query = NumericRange("cook_time", cook_time + 1, None)
+                elif filter_cook == "lt":
+                    query = NumericRange("cook_time", None, cook_time - 1)
+                elif filter_cook == "eq":
+                    query = NumericRange("cook_time", cook_time, cook_time)
+
+                results = searcher.search(query, limit=None)
+
+                for result in results:
+                    results_list.append({
+                        "title": result.get("title", "Unknown Title"),
+                        "servings": result.get("servings", "N/A"),
+                        "prep_time": result.get("prep_time", "N/A"),
+                        "cook_time": result.get("cook_time", "N/A"),
+                        "total_time": result.get("total_time", "N/A"),
+                        "difficulty": result.get("difficulty", "N/A"),
+                        "rating": result.get("rating", "N/A"),
+                        "num_reviews": result.get("num_reviews", "N/A"),
+                        "ingredients_list": result.get("ingredients", "").split(","),
+                    })
+
+            return render(request, "recipes_list_by_time.html", {
+                "recipes": results_list,
+                "filter_time": cook_time,
+                "comparator": filter_cook
+            })
+
+        except ValueError as ve:
+            print(f"Value error: {ve}")
+            error_message = str(ve)
+        except Exception as e:
+            print(f"General error: {e}")
+            error_message = f"An error occurred: {str(e)}"
+
+    else:
+        print("No valid search was submitted")
+
+    return render(request, "recipes_list_by_time.html", {
+        "recipes": results_list,
+        "error": error_message
+    })
+
+
+'''SEARCH RECIPES BY PREP TIME'''
+def search_recipes_by_prep_time(request):
+    results_list = []
+    error_message = None
+
+    if request.method == "GET" and "prep_time" in request.GET and "filter_prep" in request.GET:
+        try:
+            prep_time_str = request.GET.get("prep_time", "0").strip()
+            filter_prep = request.GET.get("filter_prep", "").strip()
+
+            if not prep_time_str.isdigit():
+                raise ValueError("Preparation time must be a valid integer.")
+            prep_time = int(prep_time_str)
+
+            if filter_prep not in ["lt", "gt", "eq"]:
+                raise ValueError("The comparison filter is invalid. Use: lt, gt, or eq.")
+
+            index_dir = os.path.join(os.path.dirname(__file__), 'index')
+            if not os.path.exists(index_dir):
+                raise Exception(f"Index not found in {index_dir}")
+
+            ix = open_dir(index_dir)
+
+            with ix.searcher() as searcher:
+                if filter_prep == "gt":
+                    query = NumericRange("prep_time", prep_time + 1, None)
+                elif filter_prep == "lt":
+                    query = NumericRange("prep_time", None, prep_time - 1)
+                elif filter_prep == "eq":
+                    query = NumericRange("prep_time", prep_time, prep_time)
+
+                results = searcher.search(query, limit=None)
+
+                for result in results:
+                    results_list.append({
+                        "title": result.get("title", "Unknown Title"),
+                        "servings": result.get("servings", "N/A"),
+                        "prep_time": result.get("prep_time", "N/A"),
+                        "cook_time": result.get("cook_time", "N/A"),
+                        "total_time": result.get("total_time", "N/A"),
+                        "difficulty": result.get("difficulty", "N/A"),
+                        "rating": result.get("rating", "N/A"),
+                        "num_reviews": result.get("num_reviews", "N/A"),
+                        "ingredients_list": result.get("ingredients", "").split(","),
+                    })
+
+            return render(request, "recipes_list_by_time.html", {
+                "recipes": results_list,
+                "filter_time": prep_time,
+                "comparator": filter_prep
+            })
+
+        except ValueError as ve:
+            print(f"Value error: {ve}")
+            error_message = str(ve)
+        except Exception as e:
+            print(f"General error: {e}")
+            error_message = f"An error occurred: {str(e)}"
+
+    else:
+        print("No valid search was submitted")
+
+    return render(request, "recipes_list_by_time.html", {
+        "recipes": results_list,
+        "error": error_message
+    })
+
+
+'''SEARCH RECIPES BY TOTAL TIME'''
+def search_recipes_by_total_time(request):
+    results_list = []
+    error_message = None
+
+    if request.method == "GET" and "total_time" in request.GET and "filter_total" in request.GET:
+        try:
+            total_time_str = request.GET.get("total_time", "0").strip()
+            filter_total = request.GET.get("filter_total", "").strip()
+
+            if not total_time_str.isdigit():
+                raise ValueError("Total time must be a valid integer.")
+            total_time = int(total_time_str)
+
+            if filter_total not in ["lt", "gt", "eq"]:
+                raise ValueError("The comparison filter is invalid. Use: lt, gt, or eq.")
+
+            index_dir = os.path.join(os.path.dirname(__file__), 'index')
+            if not os.path.exists(index_dir):
+                raise Exception(f"Index not found in {index_dir}")
+
+            ix = open_dir(index_dir)
+
+            with ix.searcher() as searcher:
+                if filter_total == "gt":
+                    query = NumericRange("total_time", total_time + 1, None)
+                elif filter_total == "lt":
+                    query = NumericRange("total_time", None, total_time - 1)
+                elif filter_total == "eq":
+                    query = NumericRange("total_time", total_time, total_time)
+
+                results = searcher.search(query, limit=None)
+
+                for result in results:
+                    results_list.append({
+                        "title": result.get("title", "Unknown Title"),
+                        "servings": result.get("servings", "N/A"),
+                        "prep_time": result.get("prep_time", "N/A"),
+                        "cook_time": result.get("cook_time", "N/A"),
+                        "total_time": result.get("total_time", "N/A"),
+                        "difficulty": result.get("difficulty", "N/A"),
+                        "rating": result.get("rating", "N/A"),
+                        "num_reviews": result.get("num_reviews", "N/A"),
+                        "ingredients_list": result.get("ingredients", "").split(","),
+                    })
+
+            return render(request, "recipes_list_by_time.html", {
+                "recipes": results_list,
+                "filter_time": total_time,
+                "comparator": filter_total
+            })
+
+        except ValueError as ve:
+            print(f"Value error: {ve}")
+            error_message = str(ve)
+        except Exception as e:
+            print(f"General error: {e}")
+            error_message = f"An error occurred: {str(e)}"
+
+    else:
+        print("No valid search was submitted")
+
+    return render(request, "recipes_list_by_time.html", {
+        "recipes": results_list,
+        "error": error_message
+    })
+
 
 def buscar_recetas_por_ingrediente(request):
     if request.method == "GET":

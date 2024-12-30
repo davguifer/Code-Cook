@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="text-primary">Search Recipes by Time</h1>
+        <p class="text-muted">Filter recipes based on preparation, cooking, or total time.</p>
+    </div>
+
+    <div class="row">
+        <!-- Search by Preparation Time -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Search by Preparation Time</h5>
+                    <form method="GET" action="{% url 'search_recipes_by_prep_time' %}">
+                        <div class="mb-3">
+                            <label for="prep_time" class="form-label">Preparation Time (minutes)</label>
+                            <input type="number" class="form-control" id="prep_time" name="prep_time" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="filter_prep" class="form-label">Filter</label>
+                            <select class="form-select" id="filter_prep" name="filter_prep">
+                                <option value="lt">Less than</option>
+                                <option value="eq">Equal to</option>
+                                <option value="gt">Greater than</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search by Cooking Time -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Search by Cooking Time</h5>
+                    <form method="GET" action="{% url 'search_recipes_by_cooking_time' %}">
+                        <div class="mb-3">
+                            <label for="cook_time" class="form-label">Cooking Time (minutes)</label>
+                            <input type="number" class="form-control" id="cook_time" name="cook_time" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="filter_cook" class="form-label">Filter</label>
+                            <select class="form-select" id="filter_cook" name="filter_cook">
+                                <option value="lt">Less than</option>
+                                <option value="eq">Equal to</option>
+                                <option value="gt">Greater than</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search by Total Time -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Search by Total Time</h5>
+                    <form method="GET" action="{% url 'search_recipes_by_total_time' %}">
+                        <div class="mb-3">
+                            <label for="total_time" class="form-label">Total Time (minutes)</label>
+                            <input type="number" class="form-control" id="total_time" name="total_time" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="filter_total" class="form-label">Filter</label>
+                            <select class="form-select" id="filter_total" name="filter_total">
+                                <option value="lt">Less than</option>
+                                <option value="eq">Equal to</option>
+                                <option value="gt">Greater than</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    {% if results %}
+        <div class="text-center my-5">
+            <h2 class="text-success">Search Results</h2>
+            <p class="text-muted">We found {{ results|length }} recipes matching your search criteria.</p>
+        </div>
+        <div class="row">
+            {% for recipe in results %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-secondary">{{ recipe.title }}</h5>
+                        <p><strong>Prep Time:</strong> {{ recipe.prep_time }} mins</p>
+                        <p><strong>Cook Time:</strong> {{ recipe.cook_time }} mins</p>
+                        <p><strong>Total Time:</strong> {{ recipe.total_time }} mins</p>
+                        <p><strong>Difficulty:</strong> 
+                            <span class="badge bg-info text-dark">{{ recipe.difficulty }}</span>
+                        </p>
+                        <p><strong>Rating:</strong> 
+                            <span class="text-warning">&#9733;</span> {{ recipe.rating }}/5 
+                            ({{ recipe.num_reviews }} reviews)
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% elif request.GET %}
+        <div class="text-center mt-5">
+            <p class="text-muted">Sorry, we couldn't find any recipes matching your criteria. Please try again with different filters.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
