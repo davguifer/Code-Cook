@@ -4,16 +4,21 @@
 {% block title %}Home - Code-Cook{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<div class="hero-section bg-primary text-white text-center py-5">
+<div class="hero-section bg-primary text-white text-center py-5 position-relative">
     <div class="container">
         <h1 class="display-4">Welcome to Code-Cook</h1>
         <p class="lead">Your ultimate cooking companion. Manage your recipes with ease.</p>
         <a href="{% url 'confirm_load_data' %}" class="btn btn-light btn-lg">Load data in database</a>
     </div>
+
+    <div class="persistent-warning">
+        <span class="warning-icon">&#9888;</span>
+        <p class="mb-0">
+            <strong>Note:</strong> Please load the database first, then index the data to ensure proper functionality.
+        </p>
+    </div>
 </div>
 
-<!-- Django Messages -->
 <div class="container mt-4">
     {% if messages %}
         {% for message in messages %}
@@ -25,7 +30,6 @@
     {% endif %}
 </div>
 
-<!-- Features Section -->
 <div class="feature-section bg-light py-5">
     <div class="container">
         <div class="row text-center">
@@ -38,14 +42,14 @@
                             <p class="card-text text-center">Discover recipes you can enjoy in 30 minutes or less!</p>
                         </div>
                     </div>
-                </a>                
+                </a>
             </div>
             <div class="col-md-4">
                 <div class="card shadow-sm border-0 feature-hover">
                     <div class="card-body">
                         <img src="{% static 'images/data_analysis.png' %}" alt="Data Analysis" class="img-fluid mb-3" style="height: 100px;">
-                        <h5 class="card-title">Smart Analytics</h5>
-                        <p class="card-text">Analyze cooking times, difficulty levels, and reviews for better meal planning.</p>
+                        <h5 class="card-title text-center">Smart Analytics</h5>
+                        <p class="card-text text-center">Analyze cooking times, difficulty levels, and reviews for better meal planning.</p>
                     </div>
                 </div>
             </div>
@@ -54,12 +58,12 @@
                     <div class="card shadow-sm border-0 feature-hover">
                         <div class="card-body">
                             <img src="{% static 'images/integration.png' %}" alt="Top Recipes" class="img-fluid mb-3" style="height: 100px;">
-                            <h5 class="card-title">Top 3 Recipes</h5>
-                            <p class="card-text">Discover the top 3 highest-rated recipes, curated just for you!</p>
+                            <h5 class="card-title text-center">Top 3 Recipes</h5>
+                            <p class="card-text text-center">Discover the top 3 highest-rated recipes just for you!</p>
                         </div>
                     </div>
                 </a>
-            </div>            
+            </div>
         </div>
     </div>
 </div>
@@ -71,6 +75,32 @@
 
 .feature-hover:hover {
     transform: scale(1.05);
+}
+
+.persistent-warning {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    background-color: #ffeeba;
+    color: #856404;
+    padding: 10px 15px;
+    border: 1px solid #ffeeba;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    text-align: center;
+    width: 250px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.persistent-warning .warning-icon {
+    font-size: 1.2rem;
+    color: #856404;
 }
 </style>
 {% endblock %}
