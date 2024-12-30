@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from recipes.whoosh_config.whoosh_config import load_index, search_recipes_by_title, search_recipes_by_time, search_recipes_by_cooking_time, search_recipes_by_prep_time, search_recipes_by_total_time, search_recipes_by_ingredients_and_total_time
+from recipes.whoosh_config.whoosh_config import load_index, search_recipes_by_title, search_recipes_by_time, search_recipes_by_cooking_time, search_recipes_by_prep_time, search_recipes_by_total_time, search_recipes_by_ingredients_and_total_time, search_top_recipes
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -13,5 +13,6 @@ urlpatterns = [
     path('search/search-by-cook-time', search_recipes_by_cooking_time, name='search_recipes_by_cooking_time'),
     path('search/search-by-total-time', search_recipes_by_total_time, name='search_recipes_by_total_time'),
     path('search/search-by-ingredients-and-total-time', search_recipes_by_ingredients_and_total_time, name='search_recipes_by_ingredients_and_total_time'),
+    path('top-recipes', search_top_recipes, name='search_top_recipes'),
 
 ]

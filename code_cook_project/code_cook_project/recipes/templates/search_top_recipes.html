@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Top 3 Recipes - Code-Cook{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4 text-primary display-4">
+        Top 3 Recipes
+    </h1>
+    <p class="text-center text-muted mb-5">
+        Discover the top-rated recipes that everyone loves!
+    </p>
+    <div class="row justify-content-center">
+        {% for recipe in recipes %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-lg h-100 border-0 recipe-card">
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="card-title mb-0">{{ recipe.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <span class="badge bg-warning text-dark fs-5">&#9733; {{ recipe.rating }}</span>
+                        <span class="text-muted small">({{ recipe.num_reviews }} reviews)</span>
+                    </div>
+                    <p class="mb-2"><strong>Servings:</strong> {{ recipe.servings }}</p>
+                    <p class="mb-2"><strong>Prep Time:</strong> {{ recipe.prep_time }} minutes</p>
+                    <p class="mb-2"><strong>Cook Time:</strong> {{ recipe.cook_time }} minutes</p>
+                    <p class="mb-2"><strong>Total Time:</strong> {{ recipe.total_time }} minutes</p>
+                    <p class="mb-2"><strong>Difficulty:</strong> <span class="badge bg-info text-dark">{{ recipe.difficulty }}</span></p>
+                    <hr>
+                    <p><strong>Ingredients:</strong></p>
+                    <ul class="list-unstyled">
+                        {% for ingredient in recipe.ingredients_list %}
+                        <li>• {{ ingredient }}</li>
+                        {% endfor %}
+                    </ul>                    
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center text-muted">No recipes found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
