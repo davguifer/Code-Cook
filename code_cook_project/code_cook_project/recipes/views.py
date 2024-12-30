@@ -7,8 +7,6 @@ from bs4 import BeautifulSoup
 from django.contrib import messages
 
 
-
-
 def home(request):
     return render(request, 'home.html')
 
