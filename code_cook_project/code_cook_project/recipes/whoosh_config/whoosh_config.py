@@ -318,7 +318,7 @@ def search_recipes_by_total_time(request):
 
 
 
-'''SEARCH RECIPES BY INGREDIENTS'''
+'''SEARCH RECIPES BY INGREDIENTS AND TOTAL TIME'''
 def search_recipes_by_ingredients_and_total_time(request):
     results_list = []
     error_message = None
