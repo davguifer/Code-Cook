@@ -16,18 +16,16 @@
         .content-wrapper {
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Asegura que ocupe toda la altura de la pantalla */
+            min-height: 100vh;
         }
 
         .main-content {
-            flex: 1; /* Hace que el contenido principal ocupe el espacio restante */
+            flex: 1; 
         }
 
         footer {
-            background-color: #000;
+            background-color: #343a40; /* Same color as bg-dark in Bootstrap */
             color: white;
-            text-align: center;
-            padding: 1rem;
         }
     </style>
 </head>
@@ -60,8 +58,8 @@
                                 Searchs
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{% url 'search_recipes_by_title' %}">Search by Title</a></li>
-                                <li><a class="dropdown-item" href="{% url 'search_recipes_by_time' %}">Search by Time</a></li>
+                                <li><a class="dropdown-item" href="{% url 'search_recipes_by_title' %}">Search by title</a></li>
+                                <li><a class="dropdown-item" href="{% url 'search_recipes_by_time' %}">Search by time</a></li>
                                 <li><a class="dropdown-item" href="{% url 'search_recipes_by_ingredients_and_total_time' %}">Search by ingredients and total time</a></li>
                             </ul>
                         </li>
@@ -76,7 +74,7 @@
         </div>
 
         <!-- Footer -->
-        <footer>
+        <footer class="bg-dark text-white text-center py-3">
             <div class="container">
                 <p>&copy; {{ current_year }} Code-Cook. All rights reserved.</p>
                 <p>Made by David Guillén.</p>

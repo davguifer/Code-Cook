@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
-{% block title %}Quick Recipes - Code-Cook{% endblock %}
+{% block title %}Easy Recipes - Code-Cook{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center mb-4 text-primary display-4">
-        Quick Recipes
+        Easy Recipes
     </h1>
     <p class="text-center text-muted mb-5">
-        Discover recipes you can enjoy in 30 minutes or less!
+        Discover recipes with an easy difficulty level for simple and quick cooking!
     </p>
-    <div class="row">
+    <div class="row justify-content-center">
         {% for recipe in recipes %}
         <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-lg border-0">
+            <div class="card shadow-lg h-100 border-0 recipe-card">
                 <div class="card-header bg-primary text-white text-center">
                     <h5 class="card-title mb-0">{{ recipe.title }}</h5>
                 </div>
@@ -33,9 +33,6 @@
                         <li>• {{ ingredient }}</li>
                         {% endfor %}
                     </ul>
-                </div>
-                <div class="card-footer text-center bg-light">
-                    <small class="text-muted">Quick and easy recipe for your busy days!</small>
                 </div>
             </div>
         </div>

@@ -12,8 +12,8 @@
     </div>
 
     <div class="persistent-warning">
-        <span class="warning-icon">&#9888;</span>
         <p class="mb-0">
+            <span class="warning-icon">&#9888;</span>
             <strong>Note:</strong> Please load the database first, then index the data to ensure proper functionality.
         </p>
     </div>
@@ -45,14 +45,17 @@
                 </a>
             </div>
             <div class="col-md-4">
-                <div class="card shadow-sm border-0 feature-hover">
-                    <div class="card-body">
-                        <img src="{% static 'images/data_analysis.png' %}" alt="Data Analysis" class="img-fluid mb-3" style="height: 100px;">
-                        <h5 class="card-title text-center">Smart Analytics</h5>
-                        <p class="card-text text-center">Analyze cooking times, difficulty levels, and reviews for better meal planning.</p>
+                <a href="{% url 'easy_recipes' %}" style="text-decoration: none; color: inherit;">
+                    <div class="card shadow-sm border-0 feature-hover">
+                        <div class="card-body">
+                            <img src="{% static 'images/data_analysis.png' %}" alt="Easy Recipes" class="img-fluid mb-3" style="height: 100px;">
+                            <h5 class="card-title text-center">Easy Recipes</h5>
+                            <p class="card-text text-center">Simple and delicious easy recipes!</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
+            
             <div class="col-md-4">
                 <a href="{% url 'search_top_recipes' %}" style="text-decoration: none; color: inherit;">
                     <div class="card shadow-sm border-0 feature-hover">
@@ -91,7 +94,7 @@
     font-weight: bold;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-    text-align: center;
+    text-align: left;
     width: 250px;
     display: flex;
     align-items: center;
