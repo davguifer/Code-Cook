@@ -1,50 +1,49 @@
-# Sistema
+# System files
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Entornos virtuales
+# Virtual environments
 venv/
 env/
 .virtualenv/
 .venv/
 
-# Archivos de entorno y configuración sensible
+# Environment and sensitive configuration files
 .env
 *.env
 
-# Archivos de configuración del editor
+# Editor configuration files
 .vscode/
 .idea/
 *.swp
 
-# Archivos de sistema (MacOS, Windows)
+# System files (MacOS, Windows)
 .DS_Store
 Thumbs.db
 
-# Archivos de compilación y logs
+# Build and log files
 *.log
 
-# Archivos de migración de Django (compilados)
+# Django migration files (compiled)
 **/migrations/*.py[cod]
 **/migrations/*.pyo
 **/migrations/*.py,cover
 
-
-
-# Archivos de salida de test y caché
+# Test output and cache files
 *.coverage
 .tox/
 .cache/
 
-# Bases de datos locales
+# Local databases
 db.sqlite3
 **/db.sqlite3
 
-# Archivos generados
+# Generated files
 *.log
 
-# Archivos de test
+# Test reports
 coverage.xml
 
-whoosh_config/index/
+# Whoosh search index files
+whoosh_config/index/*
