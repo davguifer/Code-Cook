@@ -26,6 +26,11 @@
                         {% endfor %}
                     </ul>
                 </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'recipe_recommendations' recipe.id %}" class="btn btn-primary">
+                        View Recommendations
+                    </a>
+                </div>
             </div>
         </div>
         {% empty %}
