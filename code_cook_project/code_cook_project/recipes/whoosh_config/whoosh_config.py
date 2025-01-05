@@ -13,44 +13,48 @@ from whoosh.qparser import QueryParser
 def load_index(request):
     if request.method == "POST":
         try:
-            index_dir = os.path.join(os.path.dirname(__file__), 'index')
+            if not Recipes.objects.exists():
+                messages.error(request, "No recipes found in the database. Cannot generate the search index.")
+                return redirect('home') 
+            else:
+                index_dir = os.path.join(os.path.dirname(__file__), 'index')
 
-            schema = Schema(
-                title=TEXT(stored=True, phrase=False),
-                servings=TEXT(stored=True), 
-                prep_time=NUMERIC(stored=True),
-                cook_time=NUMERIC(stored=True),
-                total_time=NUMERIC(stored=True),
-                ingredients=TEXT(stored=True, phrase=False),
-                difficulty=TEXT(stored=True, phrase=False),
-                rating=NUMERIC(stored=True, decimal_places=2),
-                num_reviews=NUMERIC(stored=True)
-            )
-
-            if os.path.exists(index_dir):
-                shutil.rmtree(index_dir)
-            os.mkdir(index_dir)
-
-            ix = create_in(index_dir, schema=schema)
-            writer = ix.writer()
-
-            recipes = Recipes.objects.all()
-
-            for recipe in recipes:
-                writer.add_document(
-                    title=recipe.title,
-                    servings=recipe.servings,
-                    prep_time=recipe.prep_time,
-                    cook_time=recipe.cook_time,
-                    total_time=recipe.total_time,
-                    ingredients=recipe.ingredients,
-                    difficulty=recipe.difficulty,
-                    rating=recipe.rating,
-                    num_reviews=recipe.num_reviews
+                schema = Schema(
+                    title=TEXT(stored=True, phrase=False),
+                    servings=TEXT(stored=True), 
+                    prep_time=NUMERIC(stored=True),
+                    cook_time=NUMERIC(stored=True),
+                    total_time=NUMERIC(stored=True),
+                    ingredients=TEXT(stored=True, phrase=False),
+                    difficulty=TEXT(stored=True, phrase=False),
+                    rating=NUMERIC(stored=True, decimal_places=2),
+                    num_reviews=NUMERIC(stored=True)
                 )
-            writer.commit()
 
-            messages.success(request, f"Index loaded successfully! {recipes.count()} recipes have been indexed.")
+                if os.path.exists(index_dir):
+                    shutil.rmtree(index_dir)
+                os.mkdir(index_dir)
+
+                ix = create_in(index_dir, schema=schema)
+                writer = ix.writer()
+
+                recipes = Recipes.objects.all()
+
+                for recipe in recipes:
+                    writer.add_document(
+                        title=recipe.title,
+                        servings=recipe.servings,
+                        prep_time=recipe.prep_time,
+                        cook_time=recipe.cook_time,
+                        total_time=recipe.total_time,
+                        ingredients=recipe.ingredients,
+                        difficulty=recipe.difficulty,
+                        rating=recipe.rating,
+                        num_reviews=recipe.num_reviews
+                    )
+                writer.commit()
+
+                messages.success(request, f"Index loaded successfully! {recipes.count()} recipes have been indexed.")
 
         except Exception as e:
             messages.error(request, f"An error occurred while loading the index: {str(e)}")
