@@ -5,13 +5,13 @@
 {% block content %}
 <div class="container py-5">
     <div class="text-center mb-5">
-        <h1 class="text-primary">Search Recipes by Difficulty or Rating</h1>
+        <h1 class="text-primary">Search Recipes by Difficulty and/or Rating</h1>
         <p class="text-muted">Filter recipes by difficulty level and/or minimum rating.</p>
     </div>
 
     <div class="row mb-5">
         <div class="col-md-6 offset-md-3">
-            <form method="GET" action="{% url 'search_recipes_by_difficulty_or_rating' %}">
+            <form method="GET" action="{% url 'search_recipes_by_difficulty_and_or_rating' %}">
                 <div class="mb-3">
                     <label for="difficulty" class="form-label">Difficulty</label>
                     <select class="form-select" id="difficulty" name="difficulty">

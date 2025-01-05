@@ -9,7 +9,7 @@
 
     <div class="row mb-5">
         <div class="col-md-6 offset-md-3">
-            <form method="GET" action="{% url 'search_recipes_by_ingredients_and_total_time' %}">
+            <form method="GET" action="{% url 'search_recipes_by_ingredients_and_or_total_time' %}">
                 <div class="mb-3">
                     <label for="ingredients" class="form-label">Ingredients</label>
                     <input type="text" class="form-control" id="ingredients" name="ingredients" placeholder="Enter ingredients separated by commas" value="{{ searched_ingredients|default:'' }}">

@@ -322,8 +322,8 @@ def search_recipes_by_total_time(request):
 
 
 
-'''SEARCH RECIPES BY INGREDIENTS AND TOTAL TIME'''
-def search_recipes_by_ingredients_and_total_time(request):
+'''SEARCH RECIPES BY INGREDIENTS AND/OR TOTAL TIME'''
+def search_recipes_by_ingredients_and_or_total_time(request):
     results_list = []
     error_message = None
 
@@ -397,13 +397,13 @@ def search_recipes_by_ingredients_and_total_time(request):
                 print(f"General error: {e}")
                 error_message = f"An error occurred: {str(e)}"
 
-    return render(request, "search_recipes_by_ingredients_and_total_time.html", {
+    return render(request, "search_recipes_by_ingredients_and_or_total_time.html", {
         "recipes": results_list,
         "error": error_message,
     })
 
-'''SEARCH RECIPES BY DIFFICULTY OR RATING'''
-def search_recipes_by_difficulty_or_rating(request):
+'''SEARCH RECIPES BY DIFFICULTY AND/OR RATING'''
+def search_recipes_by_difficulty_and_or_rating(request):
     results_list = []
     error_message = None
 
@@ -465,7 +465,7 @@ def search_recipes_by_difficulty_or_rating(request):
                 error_message = f"An error occurred: {str(e)}"
 
 
-    return render(request, "search_recipes_by_difficulty_or_rating.html", {
+    return render(request, "search_recipes_by_difficulty_and_or_rating.html", {
         "recipes": results_list,
         "error": error_message,
     })
