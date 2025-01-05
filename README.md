@@ -1,77 +1,125 @@
 # Code-Cook
 
-**Code-Cook** es una aplicación web diseñada para ayudarte a explorar, gestionar y buscar recetas de manera eficiente. Utiliza Django como framework backend, Beautiful Soup para la extracción de datos desde la web, y Whoosh para la indexación y búsqueda rápida de recetas.
+**Code-Cook** es una aplicación web diseñada para ayudarte a explorar, gestionar y buscar recetas de manera eficiente. Utiliza Django como framework backend, Beautiful Soup para la extracción de datos desde la web, y Whoosh para la indexación y búsqueda rápida de recetas. Además, cuenta con un avanzado sistema de recomendación que utiliza técnicas de TF-IDF y similitud de coseno para sugerir recetas similares basadas en ingredientes y títulos.
+
 
 ---
 
-## Características
+## Objetivos
 
-- **Extracción de datos**: Obtén recetas directamente desde [BBC Good Food](https://www.bbcgoodfood.com/search?page=1).
-- **Filtrado avanzado**: Encuentra recetas fácilmente mediante criterios como el título, tiempos específicos de preparación, cocción o el tiempo total. Además, filtra por dificultad, calificación (rating) o combina ingredientes con el tiempo total. También incluye secciones destacadas como recetas rápidas (quick recipes), recetas fáciles (easy recipes) y el top 3 de recetas mejor valoradas.
-- **Sistema de recomendaciones**: Descubre recetas similares basadas en sus ingredientes y títulos utilizando una matriz TF-IDF y similitud de coseno.
-- **Indexación rápida**: Usa Whoosh para búsquedas eficientes y organizadas.
-- **UI Intuitiva**: Interfaz amigable desarrollada con Bootstrap.
+El objetivo principal de Code-Cook es proporcionar una plataforma robusta y eficiente para:
+
+- **Facilitar la búsqueda de recetas** mediante un sistema de filtrado avanzado y personalizado.
+- **Ofrecer recomendaciones personalizadas** basadas en similitudes de ingredientes y títulos.
+- **Permitir la exploración de recetas destacadas**, como las más rápidas, las más fáciles y las mejor valoradas.
+- **Automatizar la extracción de datos** desde sitios web de recetas populares.
 
 ---
 
-## Instalación
+## Descripción de las Partes del Proyecto
 
-1. **Clona el repositorio:**
+1. **Backend**:
+   - Construido con Django, encargado de manejar la lógica del negocio, la gestión de la base de datos y las interacciones con el usuario a través de vistas y API.
+
+2. **Extracción de datos**:
+    - Utiliza Beautiful Soup y Requests para realizar scraping de recetas desde [BBC Good Food](https://www.bbcgoodfood.com/search?page=1).
+   - Los datos extraídos incluyen títulos, ingredientes, tiempos de preparación y cocción, dificultad, calificaciones y número de votos.
+   - El dato "tiempo total" es calculado en base a los atributos de tiempo de preparación y tiempo de cocción extraídos de la página.
+
+3.  **Sistema de búsqueda**:
+   - Implementado con Whoosh, permite indexar las recetas para ofrecer resultados rápidos y organizados.
+   - Incluye herramientas de búsqueda avanzadas:
+     - Búsqueda por título, tiempos de preparación, cocción y tiempo total.
+     - Filtros por dificultad o calificación.
+     - Combinación de ingredientes con tiempo total para encontrar recetas específicas.
+     - Destaca secciones como recetas rápidas (quick recipes), recetas fáciles (easy recipes) y el top 3 de las mejor valoradas. 
+
+4. **Sistema de recomendaciones**:
+   - Utiliza Scikit-learn para analizar similitudes entre recetas basadas en técnicas de TF-IDF y similitud de coseno.
+   - Permite sugerir recetas similares desde la vista de detalle de una receta.
+
+5. **Frontend**:
+   - Diseñado con Bootstrap para proporcionar una interfaz moderna, atractiva y responsiva.
+
+---
+
+## Uso de las Herramientas
+
+1. **Django**:
+   - Manejo de la configuración global del proyecto, modelos de datos, vistas y rutas.
+
+2. **Beautiful Soup**:
+   - Extracción de información estructurada desde el HTML de BBC Good Food.
+
+3. **Whoosh**:
+   - Indexación eficiente y búsqueda avanzada en la base de datos de recetas.
+
+4. **Scikit-learn**:
+   - Cálculo de similitudes entre recetas para generar recomendaciones.
+
+5. **Bootstrap**:
+   - Creación de un diseño amigable y responsivo para el usuario final.
+
+---
+
+## Manual de Uso
+
+### Instalación
+
+1. **Clona el repositorio**:
    ```bash
    git clone <repositorio>
    cd code_cook_project
    ```
 
-2. **Configura un entorno virtual:**
+2. **Configura un entorno virtual**:
    ```bash
    python -m venv venv
    source venv/bin/activate  # En Windows: venv\Scripts\activate
    ```
 
-3. **Instala las dependencias:**
+3. **Instala las dependencias**:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Aplica las migraciones:**
+4. **Aplica las migraciones**:
    ```bash
    python manage.py migrate
    ```
 
-5. **Inicia el servidor:**
+5. **Inicia el servidor**:
    ```bash
    python manage.py runserver
    ```
 
----
+### Uso de la Aplicación
 
-## Uso
+1. **Carga los datos**:
+   - Navega a la opción "Load Data in Database" para cargar recetas desde [BBC Good Food](https://www.bbcgoodfood.com/search?page=1).
 
-1. **Carga los datos:**
-   - Navega a la opción "Load Data in Database" para cargar recetas desde [BBC Good Food](https://www.bbcgoodfood.com).
-
-2. **Indexa los datos:**
+2. **Indexa los datos**:
    - Una vez cargados, navega a "Load Index" para indexar las recetas con Whoosh.
 
-3. **Calcula recomendaciones:**
+3. **Calcula recomendaciones**:
    - Ve a "Load Recommendations" para calcular recetas similares basadas en ingredientes y títulos.
 
-4. **Busca recetas:**
+4. **Busca recetas**:
    - Utiliza las herramientas de búsqueda para encontrar recetas según tus preferencias:
      - Por título.
      - Por tiempo de preparación, cocción o total.
-     - Por dificultad o calificación.
-     - Por ingredientes y tiempo total.
+     - Por dificultad y/o calificación.
+     - Por ingredientes y/o tiempo total.
 
-5. **Explora las recetas destacadas:**
+5. **Explora las recetas destacadas**:
    - Descubre recetas rápidas (menos de 30 minutos), fáciles, o las 3 mejor valoradas.
 
-6. **Consulta recomendaciones:**
+6. **Consulta recomendaciones**:
    - Accede a las recetas similares desde el detalle de una receta.
 
 ---
 
-## Tecnologías utilizadas
+## Tecnologías Utilizadas
 
 - **Backend**: Django 5.1.4
 - **Scraping**: Beautiful Soup 4.12.3, Requests 2.31.0
@@ -81,7 +129,7 @@
 
 ---
 
-## Estructura del proyecto
+## Estructura del Proyecto
 
 ```plaintext
 code_cook_project/
@@ -104,10 +152,13 @@ code_cook_project/
 
 ---
 
-## Notas importantes
+## Notas Importantes
 
-1. **Recetas premium**: Las recetas premium de BBC Good Food no están incluidas.
-2. **Base de datos**: Se utiliza SQLite por defecto, pero puede configurarse otro motor en `settings.py`.
+1. **Recetas premium**:
+   - Las recetas premium de BBC Good Food no están incluidas.
+
+2. **Base de datos**:
+   - Se utiliza SQLite por defecto, pero puede configurarse otro motor en `settings.py`.
 
 ---
 
