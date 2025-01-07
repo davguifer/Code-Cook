@@ -9,10 +9,21 @@
     <p class="text-center text-muted mb-5">
         Discover recipes you can enjoy in 30 minutes or less!
     </p>
+    <style>
+        .recipe-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .recipe-card .card-body {
+            flex-grow: 1;
+        }
+    </style>
     <div class="row">
         {% for recipe in recipes %}
         <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card shadow-lg border-0">
+            <div class="card shadow-lg border-0 recipe-card">
                 <div class="card-header bg-primary text-white text-center">
                     <h5 class="card-title mb-0">{{ recipe.title }}</h5>
                 </div>
