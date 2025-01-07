@@ -43,6 +43,31 @@ El objetivo principal de Code-Cook es proporcionar una plataforma robusta y efic
 
 ---
 
+## Elección del enfoque para el sistema de recomendación
+
+En el sistema de recomendación de recetas, se decidió utilizar un enfoque basado en contenido con **TF-IDF (Term Frequency-Inverse Document Frequency)** y **Similitud Coseno** en lugar de un enfoque basado en ítems (como el utilizado comúnmente en sistemas de recomendación colaborativos). Las razones detrás de esta elección son las siguientes:
+
+1. **Datos disponibles**:
+    - Aunque las recetas en la página cuentan con interacción de usuarios (como puntuaciones y comentarios), no fue posible extraer esta información debido a que el contenido relacionado se genera dinámicamente mediante JavaScript, lo que limita las capacidades de extracción con herramientas como Beautiful Soup.
+    - Los datos principales disponibles que se pudieron obtener son textuales: titulo, tiempo de preparación, tiempo de cocción, valoración, número de votos, dificultad e ingredientes.
+
+2. **Adecuación del dominio**:
+   - En el contexto de recetas, es lógico asumir que los usuarios buscarán recetas similares en términos de ingredientes y características textuales, más que basándose en preferencias de otros usuarios.
+   - TF-IDF es ideal para identificar similitudes en conjuntos de palabras y frases, permitiendo capturar similitudes relevantes entre recetas.
+
+3. **Escalabilidad y precomputación**:
+   - La similitud entre recetas se calcula previamente y se almacena en la base de datos, mejorando la eficiencia durante las consultas.
+   - Este enfoque es escalable para un conjunto grande de recetas, ya que reduce la necesidad de cálculos intensivos en tiempo real.
+
+4. **Simplicidad de implementación**:
+   - Al no requerir datos de usuarios, el enfoque basado en contenido se adapta perfectamente a aplicaciones donde el objetivo principal es recomendar ítems basados únicamente en sus características inherentes.
+   - La integración de herramientas como **Scikit-learn** para la generación de la matriz TF-IDF simplifica la implementación y garantiza resultados precisos.
+
+
+Por estas razones, el enfoque basado en contenido resulta ser el más adecuado para el sistema de recomendación de Code-Cook.
+
+---
+
 ## Uso de las Herramientas
 
 1. **Django**:
