@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from recipes.models import Recipes
 import os
 from whoosh.qparser import QueryParser
+import re
 
 def load_index(request):
     if request.method == "POST":
@@ -337,16 +338,26 @@ def search_recipes_by_ingredients_and_or_total_time(request):
             ix = open_dir(index_dir)
             with ix.searcher() as searcher:
                 combined_query = []
+
                 if ingredients_query:
                     ingredients_list = [ingredient.strip() for ingredient in ingredients_query.split(",")]
-                    ingredients_subqueries = []
+                    processed_ingredients = []
+
                     for ingredient in ingredients_list:
+                        cleaned_ingredient = re.sub(r'\b\d+\s*\w*\s*', '', ingredient).strip()
+                        if cleaned_ingredient:
+                            processed_ingredients.append(cleaned_ingredient)
+
+                    ingredients_subqueries = []
+                    for ingredient in processed_ingredients:
                         ingredient_parser = QueryParser("ingredients", schema=ix.schema)
                         ingredients_subqueries.append(ingredient_parser.parse(f'*{ingredient}*'))
+
                     if ingredients_subqueries:
                         combined_ingredients_query = ingredients_subqueries[0]
                         for subquery in ingredients_subqueries[1:]:
                             combined_ingredients_query &= subquery
+
                         combined_query.append(combined_ingredients_query)
 
                 if total_time_str and filter_total:
