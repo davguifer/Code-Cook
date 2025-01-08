@@ -48,8 +48,7 @@ El objetivo principal de Code-Cook es proporcionar una plataforma robusta y efic
 En el sistema de recomendación de recetas, se decidió utilizar un enfoque basado en contenido con **TF-IDF (Term Frequency-Inverse Document Frequency)** y **Similitud Coseno** en lugar de un enfoque basado en ítems (como el utilizado comúnmente en sistemas de recomendación colaborativos). Las razones detrás de esta elección son las siguientes:
 
 1. **Datos disponibles**:
-    - Aunque las recetas en la página cuentan con interacción de usuarios (como puntuaciones y comentarios), no fue posible extraer esta información debido a que el contenido relacionado se genera dinámicamente mediante JavaScript, lo que limita las capacidades de extracción con herramientas como Beautiful Soup.
-    - Los datos principales disponibles que se pudieron obtener son textuales: titulo, tiempo de preparación, tiempo de cocción, valoración, número de votos, dificultad e ingredientes.
+    - Los datos principales que se obtuvieron son: titulo, tiempo de preparación, tiempo de cocción, valoración, número de votos, dificultad e ingredientes.
 
 2. **Adecuación del dominio**:
    - En el contexto de recetas, es lógico asumir que los usuarios buscarán recetas similares en términos de ingredientes y características textuales, más que basándose en preferencias de otros usuarios.
